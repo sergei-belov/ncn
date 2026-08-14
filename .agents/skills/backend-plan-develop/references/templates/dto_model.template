@@ -1,0 +1,39 @@
+# backend/models/pydantic/dto/{{filename}}_dto.py
+
+from datetime import datetime
+from uuid import UUID
+
+from pydantic import Field
+
+from cp_common.models.pydantic import NoneValidationMixin
+from cp_postgresql.models.sqlalchemy import UUIDModel, OrmModel
+
+
+class {{ClassName}}DTO(OrmModel): # OrmModel is without autogen UUID
+    """Internal DTO for {{resource_name}}."""
+
+    # Define your fields here
+    id: UUID
+    project_id: UUID
+    name: str
+    description: str | None
+    created_at: datetime
+
+
+class {{ClassName}}CreateDTO(UUIDModel):  # UUIDModel is OrmModel with autogen id: UUID = uuid4()
+    """DTO for creating a {{resource_name}}."""
+
+    # Define your fields here with validation
+    project_id: UUID = Field(..., description="ID of the project this {{resource_name}} belongs to")
+    name: str = Field(..., min_length=3, max_length=100)
+    description: str | None = Field(default=None, max_length=500)
+
+
+class {{ClassName}}UpdateFieldsDTO(NoneValidationMixin):
+    """DTO with optional fields for PATCH/PUT."""
+
+    # Define your optional fields here with validation
+    name: str | None = Field(default=None, min_length=3, max_length=100)
+    description: str | None = Field(default=None, max_length=500)
+
+    _none_allowed_fields = {"description"}

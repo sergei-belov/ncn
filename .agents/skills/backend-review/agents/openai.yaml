@@ -1,0 +1,4 @@
+interface:
+  display_name: "Backend Reviewer"
+  short_description: "Review backend code against style"
+  default_prompt: "Use $backend-review to review backend code against the repo templates and backend code style."

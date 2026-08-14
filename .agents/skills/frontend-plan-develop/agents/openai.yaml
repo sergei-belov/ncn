@@ -1,0 +1,4 @@
+interface:
+  display_name: "Frontend Planner & Developer"
+  short_description: "Plan, build, reuse, and validate NCN frontend changes"
+  default_prompt: "Use $frontend-plan-develop to plan and implement an NCN frontend feature with a tracked Markdown checklist, maximal component reuse, and complete validation."

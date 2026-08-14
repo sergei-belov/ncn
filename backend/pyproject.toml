@@ -1,0 +1,84 @@
+[tool.poetry]
+name = "ncn-pms"
+version = "0.1.0"
+description = "NCN project management service"
+authors = ["author <serbelovm@yandex.ru>"]
+readme = "README.md"
+packages = []
+
+[tool.poetry.dependencies]
+python = "^3.13"
+python-dotenv = "^1.2.2"
+pydantic = "^2.13.4"
+pydantic-settings = "^2.15.0"
+fastapi = "^0.141.1"
+python-multipart = "^0.0.20"
+bcrypt = ">=4.0,<6.0"
+pyjwt = {extras = ["crypto"], version = "^2.10.1"}
+uvicorn = "^0.52.1"
+poethepoet = "^0.48.0"
+greenlet = "^3.5.4"
+sqlalchemy = "^2.0.51"
+psycopg2-binary = "^2.9.12"
+asyncpg = "^0.31.0"
+prometheus-client = "^0.26.0"
+prometheus-fastapi-instrumentator = "^8.1.0"
+
+
+[tool.poetry.group.alembic.dependencies]
+alembic = "^1.19.1"
+psycopg2-binary = "^2.9.12"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.15.5"
+pre-commit = "^4.5.1"
+pre-commit-hooks = "^6.0.0"
+pytest = "^8.3.5"
+pytest-asyncio = "^0.21.0"
+mypy = "^1.2.0"
+docker = "^7.0.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest]
+    [tool.pytest.ini_options]
+    minversion = "6.0"
+    addopts = "-s -vv"  # TODO: -ra
+    testpaths = [
+        "tests/unit",
+        "tests/integration",
+    ]
+    asyncio_mode = "auto"
+
+[tool.mypy]
+python_version = "3.13"
+ignore_missing_imports = true
+
+[tool.poe.executor]
+type = "simple"
+
+[tool.poe.tasks.format]
+shell = "ruff check api models --fix --show-fixes --output-format=full && ruff format api models"
+
+
+[tool.poe.tasks.check-versions-directory]
+shell = "[ -d 'migrations/postgres/versions' ] || mkdir migrations/postgres/versions"
+
+[tool.poe.tasks.postgres-migrations]
+cmd = "alembic upgrade head"
+envfile = ".env.local"
+
+[tool.poe.tasks.create-postgres-migration]
+cmd = "alembic revision --autogenerate -m \"${message}\""
+args = { message = { options = ["-m"], default = "" }}
+deps = [ "check-versions-directory" ]
+envfile = ".env.local"
+
+[tool.poe.tasks.down-postgres-migration]
+cmd = "alembic downgrade -1"
+envfile = ".env.local"
+
+[tool.poe.tasks.test]
+cmd = "pytest --disable-warnings -v --no-header"

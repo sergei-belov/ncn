@@ -1,0 +1,113 @@
+# backend/api/db/{{filename}}.py
+
+from uuid import UUID
+
+import sqlalchemy as sa
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from api.services import Services
+from cp_postgresql import BaseDatabaseGeneric
+from models import (
+    pydantic,
+    sqlalchemy,
+)
+
+
+class {{ClassName}}Db(
+    BaseDatabaseGeneric[
+        sqlalchemy.{{ClassName}},
+        UUID,
+        pydantic.{{ClassName}}DTO,
+        pydantic.{{ClassName}}CreateDTO,
+        pydantic.{{ClassName}}UpdateFieldsDTO,
+    ]
+):
+    """{{ResourceName}} repository."""
+
+    database = Services.database
+
+    _table = sqlalchemy.{{ClassName}}
+    _id = UUID
+    _model = pydantic.{{ClassName}}DTO
+    _model_create = pydantic.{{ClassName}}CreateDTO
+    _model_update = pydantic.{{ClassName}}UpdateFieldsDTO
+
+    async def get_with_joins(
+        self,
+        session: AsyncSession,
+        {{resource_name}}_id: UUID,
+        **filters
+    ) -> pydantic.{{ClassName}}DTO | None:
+        """
+        Example of a custom method with complex joins.
+        This method retrieves a {{resource_name}} along with related data from other tables.
+
+        Example of complex join query - selecting from multiple joined tables:
+        """
+        # Example: Joining with related tables to get detailed information
+        stmt = (
+            select(self._table)
+            # Add joins with other tables as needed, for example:
+            # .join(RelatedTable, self._table.related_id == RelatedTable.id)
+            # .outerjoin(OptionalTable, self._table.optional_id == OptionalTable.id)
+            .where(self._table.id == {{resource_name}}_id)
+            .where(**filters)  # Apply additional filters if needed
+        )
+
+        result = await session.execute(stmt)
+        row = result.first()
+
+        if row:
+            return self._model.model_validate(row)
+        return None
+
+    async def get_list_with_statistics(
+        self,
+        session: AsyncSession,
+        project_id: UUID,
+        **filters
+    ) -> list[pydantic.{{ClassName}}DTO]:
+        """
+        Example of a method that retrieves a list with aggregated data from related tables.
+        """
+        # Example: Complex query with aggregations and joins
+        stmt = (
+            select(self._table)
+            # Example aggregation: join with another table and count related records
+            # .add_columns(func.count(RelatedEntity.id).label('related_count'))
+            # .join(RelatedEntity, self._table.id == RelatedEntity.{{resource_name}}_id, isouter=True)
+            # .group_by(self._table.id)
+            .where(self._table.project_id == project_id)
+            .where(**filters)  # Apply additional filters
+            .order_by(self._table.created_at.desc())  # Order by creation date
+        )
+
+        result = await session.execute(stmt)
+        rows = result.fetchall()
+
+        return [self._model.model_validate(row) for row in rows]
+
+    async def get_summary_statistics(
+        self,
+        session: AsyncSession,
+        project_id: UUID
+    ):
+        """
+        Example of a complex query returning aggregated statistics about {{resource_name}}.
+        """
+        # Example: Query that returns counts, averages, or other statistical data
+        stmt = (
+            select(
+                # Example aggregations:
+                # func.count(self._table.id).label('total_{{plural_resource_name}}'),
+                # func.avg(RelatedTable.some_field).label('avg_value'),
+                # func.sum(RelatedTable.another_field).label('total_sum')
+            )
+            .select_from(self._table)
+            # .join(RelatedTable, self._table.id == RelatedTable.{{resource_name}}_id)
+            .where(self._table.project_id == project_id)
+        )
+
+        result = await session.execute(stmt)
+        return result.first()

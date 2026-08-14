@@ -1,0 +1,144 @@
+# backend/api/managers/{{filename}}.py
+
+from uuid import UUID
+
+from fastapi import (
+    HTTPException,
+    status,
+)
+
+from api.db.db import Database
+from api.services import Services
+from cp_common.models.pydantic import (
+    MetaList,
+    ViewList,
+    ViewListQueries,
+    DeleteResult
+)
+from models import enum
+from models.pydantic.api import {{filename}}_api as api_models
+from models.pydantic.dto import (
+    {{filename}}_dto,
+    user_dto,
+)
+from models.sqlalchemy import {{ClassName}}
+
+
+class {{ClassName}}Manager:
+    """Business-logic layer for {{resource_name}}."""
+
+    @staticmethod
+    async def list_{{plural_resource_name}}(user: user_dto.UserAccessDataDTO, queries: ViewListQueries) -> ViewList:
+        async with Services.database.session() as session:
+            # Implement your list logic here - make sure to filter by project
+            total_count = await Database.{{plural_resource_name}}.get_count(
+                session=session,
+                project_id=user.project_id,  # Filter by the project the user has access to
+                search=queries.search,
+                # Add search column if needed: search_column={{ClassName}}.name,
+            )
+
+            {{resource_name}}_list = await Database.{{plural_resource_name}}.get_paginated_list(
+                queries=queries,
+                session=session,
+                project_id=user.project_id,  # Filter by the project the user has access to
+                # Add search column if needed: search_column={{ClassName}}.name,
+            )
+
+        # Transform your items if needed
+        items = [
+            api_models.{{ClassName}}ListItemAPI.model_validate(item) # or with additional kwargs api_models.{{ClassName}}ListItemAPI(**item.model_dump(), **kwargs)
+            for item in {{resource_name}}_list
+        ]
+        meta = MetaList(total_count=total_count, offset=queries.offset, limit=queries.limit)
+        return ViewList(data=items, meta=meta)
+
+    @staticmethod
+    async def create_{{resource_name}}(
+        user: user_dto.UserAccessDataDTO, data: api_models.Post{{ClassName}}Request
+    ) -> api_models.Post{{ClassName}}Response:
+        async with Services.database.session() as session:
+            # Create your resource here with project association
+            {{resource_name}}_dto_instance = {{filename}}_dto.{{ClassName}}CreateDTO.model_validate(data)
+            # Add the project_id to the model if it has such a field
+            # {{resource_name}}_dto_instance.project_id = user.project_id
+
+            {{resource_name}} = await Database.{{plural_resource_name}}.create(
+                {{resource_name}}_dto_instance,
+                session=session
+            )
+
+        return api_models.Post{{ClassName}}Response.model_validate({{resource_name}})
+
+    @staticmethod
+    async def get_{{resource_name}}(user: user_dto.UserAccessDataDTO, {{resource_name}}_id: UUID) -> api_models.Get{{ClassName}}Response:
+        async with Services.database.session() as session:
+            # Retrieve your resource by ID, filtered by project
+            {{resource_name}} = await Database.{{plural_resource_name}}.get(session=session, id={{resource_name}}_id, project_id=user.project_id)
+            if not {{resource_name}}:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="{{ClassName}} not found")
+
+        return api_models.Get{{ClassName}}Response.model_validate({{resource_name}})
+
+    @staticmethod
+    async def update_{{resource_name}}(
+        user: user_dto.UserAccessDataDTO,
+        {{resource_name}}_id: UUID,
+        data: api_models.Put{{ClassName}}Request
+    ) -> api_models.{{ClassName}}Response:
+        async with Services.database.session() as session:
+            # Update your resource here, filtered by project
+            updated_{{resource_name}} = await Database.{{plural_resource_name}}.upsert(
+                data={{filename}}_dto.{{ClassName}}DTO(id={{resource_name}}_id, **data),
+                session=session,
+            )
+
+            if not updated_{{resource_name}}:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="{{ClassName}} not found")
+
+        return api_models.{{ClassName}}Response.model_validate(updated_{{resource_name}})
+
+    @staticmethod
+    async def patch_{{resource_name}}(
+        user: user_dto.UserAccessDataDTO,
+        {{resource_name}}_id: UUID,
+        data: api_models.Patch{{ClassName}}Request
+    ) -> api_models.Patch{{ClassName}}Response:
+        async with Services.database.session() as session:
+            {{resource_name}}_update_dto = {{filename}}_dto.{{ClassName}}UpdateFieldsDTO(**data.model_dump(exclude_unset=True))
+            updated_{{resource_name}} = await Database.{{plural_resource_name}}.update(
+                id={{resource_name}}_id,
+                updated_by_id=user.user_id,
+                data={{resource_name}}_update_dto,
+                project_id=user.project_id,  # Ensure update only affects resources in the authorized project
+                session=session,
+            )
+            if not updated_{{resource_name}}:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="{{ClassName}} not found")
+
+        return api_models.Patch{{ClassName}}Response.model_validate(updated_{{resource_name}})
+
+    @staticmethod
+    async def delete_{{resource_name}}(user: user_dto.UserAccessDataDTO, {{resource_name}}_id: UUID) -> None:
+        async with Services.database.session() as session:
+            # Delete your resource here, filtered by project
+            deleted_{{resource_name}} = await Database.{{plural_resource_name}}.delete(
+                id={{resource_name}}_id,
+                session=session,
+                project_id=user.project_id  # Ensure deletion only affects resources in the authorized project
+            )
+
+            if not deleted_{{resource_name}}:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="{{ClassName}} not found")
+
+    @staticmethod
+    async def delete_multiple_{{plural_resource_name}}(
+        project_id: UUID,
+        {{resource_name}}_ids: list[UUID],
+    ) -> api_models.Delete{{ClassName}}sResponse:
+        async with Services.database.session() as session:
+            deleted_{{resource_name}}s = await Database.{{plural_resource_name}}.delete_many(ids={{resource_name}}_ids, project_id=project_id)
+
+        deleted_ids = {item.id for item in deleted_{{resource_name}}s}
+        records = [DeleteResult(deleted=(id_ in deleted_ids), id=id_) for id_ in {{resource_name}}_ids]
+        return api_models.Delete{{ClassName}}sResponse(records=records)

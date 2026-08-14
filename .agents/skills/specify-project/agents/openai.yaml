@@ -1,0 +1,4 @@
+interface:
+  display_name: "Specify Project"
+  short_description: "Maintain service-oriented project specifications"
+  default_prompt: "Use $specify-project to create or update a living project specification with complete per-service contracts."

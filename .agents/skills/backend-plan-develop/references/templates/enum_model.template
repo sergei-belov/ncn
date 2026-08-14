@@ -1,0 +1,10 @@
+from __future__ import annotations
+
+from enum import StrEnum
+
+
+class {{ClassName}}(StrEnum):
+    """Description of the enum values."""
+
+    VALUE1 = "value1"
+    VALUE2 = "value2"

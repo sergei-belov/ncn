@@ -1,0 +1,181 @@
+# backend/api/router/{{filename}}.py
+from typing import Annotated
+from uuid import UUID
+
+from fastapi import (
+    APIRouter,
+    Depends,
+    Path,
+    Query,
+    status,
+)
+
+from api.dependencies.http import get_user_in_project
+from cp_common.models.pydantic import HTTPExceptionResponse
+from api.managers.managers import Managers
+from models import pydantic
+
+
+router = APIRouter(prefix="/projects/{project_id}")
+
+
+@router.get(
+    "/{{resource_name}}",
+    status_code=status.HTTP_200_OK,
+    summary="List {{plural_resource_name}}",
+    response_model=pydantic.Get{{ClassName}}ListResponse,
+    responses={
+        status.HTTP_200_OK: {"model": pydantic.Get{{ClassName}}ListResponse},
+        status.HTTP_401_UNAUTHORIZED: {"model": HTTPExceptionResponse},
+        status.HTTP_403_FORBIDDEN: {"model": HTTPExceptionResponse},
+        status.HTTP_422_UNPROCESSABLE_ENTITY: {"model": HTTPExceptionResponse},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": HTTPExceptionResponse},
+    },
+)
+async def list_{{plural_resource_name}}(
+    project_id: Annotated[UUID, Path(description="ID of project")],
+    queries: Annotated[pydantic.Get{{ClassName}}ListQueries, Depends()],
+    user: Annotated[pydantic.UserAccessDataDTO, Depends(get_user_in_project)],
+):
+    return await Managers.{{resource_name}}.list_{{plural_resource_name}}(user=user, queries=queries)
+
+
+@router.post(
+    "/{{resource_name}}",
+    status_code=status.HTTP_201_CREATED,
+    summary="Create {{resource_name}}",
+    response_model=pydantic.Post{{ClassName}}Response,
+    responses={
+        status.HTTP_201_CREATED: {"model": pydantic.Post{{ClassName}}Response},
+        status.HTTP_401_UNAUTHORIZED: {"model": HTTPExceptionResponse},
+        status.HTTP_403_FORBIDDEN: {"model": HTTPExceptionResponse},
+        status.HTTP_422_UNPROCESSABLE_ENTITY: {"model": HTTPExceptionResponse},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": HTTPExceptionResponse},
+    },
+)
+async def create_{{resource_name}}(
+    project_id: Annotated[UUID, Path(description="ID of project")],
+    body: pydantic.Post{{ClassName}}Request,
+    user: Annotated[pydantic.UserAccessDataDTO, Depends(get_user_in_project)],
+):
+    return await Managers.{{resource_name}}.create_{{resource_name}}(user=user, data=body)
+
+
+@router.get(
+    "/{{resource_name}}/{resource_id}",
+    status_code=status.HTTP_200_OK,
+    summary="Get {{resource_name}}",
+    response_model=pydantic.Get{{ClassName}}Response,
+    responses={
+        status.HTTP_200_OK: {"model": pydantic.Get{{ClassName}}Response},
+        status.HTTP_401_UNAUTHORIZED: {"model": HTTPExceptionResponse},
+        status.HTTP_403_FORBIDDEN: {"model": HTTPExceptionResponse},
+        status.HTTP_404_NOT_FOUND: {"model": HTTPExceptionResponse},
+        status.HTTP_422_UNPROCESSABLE_ENTITY: {"model": HTTPExceptionResponse},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": HTTPExceptionResponse},
+    },
+)
+async def get_{{resource_name}}(
+    project_id: Annotated[UUID, Path(description="ID of project")],
+    resource_id: Annotated[UUID, Path()],
+    user: Annotated[pydantic.UserAccessDataDTO, Depends(get_user_in_project)],
+):
+    return await Managers.{{resource_name}}.get_{{resource_name}}(user=user, {{resource_name}}_id=resource_id)
+
+
+@router.put(
+    "/{{resource_name}}/{resource_id}",
+    status_code=status.HTTP_200_OK,
+    summary="Update {{resource_name}}",
+    response_model=pydantic.Put{{ClassName}}Response,
+    responses={
+        status.HTTP_200_OK: {"model": pydantic.Put{{ClassName}}Response},
+        status.HTTP_401_UNAUTHORIZED: {"model": HTTPExceptionResponse},
+        status.HTTP_403_FORBIDDEN: {"model": HTTPExceptionResponse},
+        status.HTTP_404_NOT_FOUND: {"model": HTTPExceptionResponse},
+        status.HTTP_422_UNPROCESSABLE_ENTITY: {"model": HTTPExceptionResponse},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": HTTPExceptionResponse},
+    },
+)
+async def update_{{resource_name}}(
+    project_id: Annotated[UUID, Path(description="ID of project")],
+    resource_id: Annotated[UUID, Path()],
+    body: pydantic.Put{{ClassName}}Request,
+    user: Annotated[pydantic.UserAccessDataDTO, Depends(get_user_in_project)],
+):
+    return await Managers.{{resource_name}}.update_{{resource_name}}(user=user, {{resource_name}}_id=resource_id, data=body)
+
+
+@router.patch(
+    "/{{resource_name}}/{resource_id}",
+    status_code=status.HTTP_200_OK,
+    summary="Update {{resource_name}} partially",
+    response_model=pydantic.Patch{{ClassName}}Response,
+    responses={
+        status.HTTP_200_OK: {"model": pydantic.Patch{{ClassName}}Response},
+        status.HTTP_401_UNAUTHORIZED: {"model": HTTPExceptionResponse},
+        status.HTTP_403_FORBIDDEN: {"model": HTTPExceptionResponse},
+        status.HTTP_404_NOT_FOUND: {"model": HTTPExceptionResponse},
+        status.HTTP_422_UNPROCESSABLE_ENTITY: {"model": HTTPExceptionResponse},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": HTTPExceptionResponse},
+    },
+)
+async def patch_{{resource_name}}(
+    project_id: Annotated[UUID, Path(description="ID of project")],
+    resource_id: Annotated[UUID, Path()],
+    body: pydantic.Patch{{ClassName}}Request,
+    user: Annotated[pydantic.UserAccessDataDTO, Depends(get_user_in_project)],
+):
+    return await Managers.{{resource_name}}.patch_{{resource_name}}(user=user, {{resource_name}}_id=resource_id, data=body)
+
+
+@router.delete(
+    "/{{resource_name}}/{resource_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Delete {{resource_name}}",
+    response_model=None,
+    responses={
+        status.HTTP_204_NO_CONTENT: {"model": None},
+        status.HTTP_401_UNAUTHORIZED: {"model": HTTPExceptionResponse},
+        status.HTTP_403_FORBIDDEN: {"model": HTTPExceptionResponse},
+        status.HTTP_404_NOT_FOUND: {"model": HTTPExceptionResponse},
+        status.HTTP_422_UNPROCESSABLE_ENTITY: {"model": HTTPExceptionResponse},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": HTTPExceptionResponse},
+    },
+)
+async def delete_{{resource_name}}(
+    project_id: Annotated[UUID, Path(description="ID of project")],
+    resource_id: Annotated[UUID, Path()],
+    user: Annotated[pydantic.UserAccessDataDTO, Depends(get_user_in_project)],
+):
+    await Managers.{{resource_name}}.delete_{{resource_name}}(user=user, {{resource_name}}_id=resource_id)
+
+
+@router.delete(
+    "/{{resource_name}}",
+    status_code=status.HTTP_200_OK,
+    summary="Delete multiple {{plural_resource_name}}",
+    response_model=pydantic.Delete{{ClassName}}sResponse,
+    responses={
+        status.HTTP_200_OK: {"model": pydantic.Delete{{ClassName}}sResponse},
+        status.HTTP_401_UNAUTHORIZED: {"model": HTTPExceptionResponse},
+        status.HTTP_403_FORBIDDEN: {"model": HTTPExceptionResponse},
+        status.HTTP_422_UNPROCESSABLE_ENTITY: {"model": HTTPExceptionResponse},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": HTTPExceptionResponse},
+    },
+)
+async def delete_multiple_{{plural_resource_name}}(
+    project_id: Annotated[UUID, Path(description="ID of project")],
+    user: Annotated[pydantic.UserAccessDataDTO, Depends(get_user_in_project)],
+    ids: Annotated[
+        list[UUID],
+        Query(
+            max_length=100,  # Assuming a reasonable limit for bulk deletion
+            description="IDs of {{plural_resource_name}} to delete."
+        )
+    ],
+) -> pydantic.Delete{{ClassName}}sResponse:
+    return await Managers.{{resource_name}}.delete_multiple_{{plural_resource_name}}(
+        project_id=project_id,
+        {{resource_name}}_ids=ids,
+    )

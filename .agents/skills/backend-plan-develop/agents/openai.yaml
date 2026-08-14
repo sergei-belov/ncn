@@ -1,0 +1,4 @@
+interface:
+  display_name: "Backend Planner & Developer"
+  short_description: "Plan and implement backend changes without migrations or execution"
+  default_prompt: "Use $backend-plan-develop to implement a backend change from docs diffs or a direct feature request without creating migrations or running project code or formatters."

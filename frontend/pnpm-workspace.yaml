@@ -1,0 +1,7 @@
+allowBuilds:
+  msw: true
+  vue-demi: true
+confirmModulesPurge: false
+minimumReleaseAgeExclude:
+  - reka-ui@2.10.3
+  - '@lucide/vue@1.31.0'

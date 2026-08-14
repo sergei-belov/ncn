@@ -1,0 +1,4 @@
+interface:
+  display_name: "Specify Plan"
+  short_description: "Create validated feature planning packages"
+  default_prompt: "Use $specify-plan to turn this feature request into a validated feat-{name} planning package."

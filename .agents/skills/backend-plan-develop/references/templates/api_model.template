@@ -1,0 +1,90 @@
+# backend/models/pydantic/api/{{filename}}_api.py
+from pydantic import (
+    BaseModel,
+    Field,
+)
+from uuid import UUID
+
+from cp_common.models.pydantic import (
+    DateTimeSerialized,
+    MultiDeleteResponse,
+    NoneValidationMixin,
+    ViewList,
+    ViewListQueries,
+)
+from cp_postgresql.models.sqlalchemy import UUIDModel
+from models import enum
+
+
+class {{ClassName}}API(UUIDModel):
+    """Public base {{resource_name}} representation."""
+
+    # Define your fields here
+    name: str
+    description: str | None
+    created_at: DateTimeSerialized # If used in SQLAlchemy models
+    created_by: UUIDModel | None = None # If used in SQLAlchemy models
+    updated_by: UUIDModel | None = None # If used in SQLAlchemy models
+    updated_at: DateTimeSerialized | None = None # If used in SQLAlchemy models
+
+
+class {{ClassName}}ListItemAPI({{ClassName}}API):
+    # Add any additional fields for list items
+    pass
+
+
+class {{ClassName}}UpdateFieldsAPI(NoneValidationMixin):
+    """Public base {{resource_name}} representation for PATCH method."""
+    name: str | None = None
+    description: str | None = None
+
+    _none_allowed_fields = {"description"}
+
+
+class Get{{ClassName}}Response({{ClassName}}API):
+    """Single {{resource_name}} retrieval."""
+    pass
+
+
+class Get{{ClassName}}ListQueries(ViewListQueries):
+    # Specify sort options for this resource, or inherit from a common enum
+    # sort_by: enum.{{ResourceName}}ListSortBy = enum.{{ResourceName}}ListSortBy.NAME
+    pass
+
+
+class Get{{ClassName}}ListResponse(ViewList):
+    data: list[{{ClassName}}ListItemAPI]
+
+
+class Post{{ClassName}}Request(UUIDModel):
+    # Define the fields required for creating the resource
+    name: str = Field(..., min_length=3, max_length=100)
+    description: str | None = Field(default=None, max_length=500)
+
+
+class Post{{ClassName}}Response({{ClassName}}API):
+    """201-created {{resource_name}} response."""
+
+
+class Patch{{ClassName}}Request({{ClassName}}UpdateFieldsAPI):
+    """Patch fields of {{resource_name}}."""
+    pass
+
+
+class Patch{{ClassName}}Response({{ClassName}}API):
+    """Response for PATCH /{{resource_name}}/{id}"""
+    pass
+
+
+class Put{{ClassName}}Request({{ClassName}}API):
+    """Update entire {{resource_name}}."""
+    pass
+
+
+class Put{{ClassName}}Response({{ClassName}}API):
+    """Response for PUT /{{resource_name}}/{id}"""
+    pass
+
+
+class Delete{{ClassName}}sResponse(MultiDeleteResponse):
+    """Response for DELETE /{{resource_name}} by query ids=...&ids=..."""

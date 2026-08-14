@@ -1,0 +1,4 @@
+interface:
+  display_name: "Docs Writer"
+  short_description: "Write and validate concise project documentation"
+  default_prompt: "Use $docs-writer to write or update concise project documentation and validate facts, structure, and links."

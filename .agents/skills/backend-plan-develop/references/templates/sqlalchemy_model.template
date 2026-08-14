@@ -1,0 +1,15 @@
+from datetime import datetime
+
+import sqlalchemy as sa
+from sqlalchemy.orm import Mapped
+
+from cp_postgresql.models.sqlalchemy import SQLAlchemyBase
+
+
+class {{ClassName}}(SQLAlchemyBase):
+    __tablename__ = "{{table_name}}"
+
+    # Define your columns here
+    name: Mapped[str] = sa.Column(sa.String(100), nullable=False)
+    description: Mapped[str] = sa.Column(sa.Text, nullable=True)
+    created_at: Mapped[datetime] = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())

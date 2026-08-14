@@ -1,0 +1,18 @@
+[
+  {
+    "label": "Run frontend",
+    "command": "cd frontend; npm run dev",
+    "use_new_terminal": true,
+    "hooks": ["create_worktree"],
+    "reveal": "no_focus",
+    "hide": "on_success",
+  },
+  {
+    "label": "Run backend",
+    "command": "cd backend; conda activate ncn; uvicorn --use-colors api.main:app --host 0.0.0.0 --port 8015 --reload",
+    "use_new_terminal": true,
+    "hooks": ["create_worktree"],
+    "reveal": "no_focus",
+    "hide": "on_success",
+  },
+]
