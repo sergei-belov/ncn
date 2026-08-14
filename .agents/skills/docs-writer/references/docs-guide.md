@@ -7,17 +7,18 @@
 - Reuse project-provided templates and commands when present.
 - Do not assume documentation lives in `docs/`, uses English, or has a central specification.
 
-## Source Precedence
+## Select Sources by Claim
 
-Use the first applicable authoritative source:
+- Use user requirements and accepted decisions for requested or intended behavior.
+- Use accepted specifications, schemas, and generated definitions for declared contracts.
+- Use the current implementation, configuration, registration, and wiring for implemented behavior when reading them is allowed.
+- Use executed checks or runtime evidence for claims that something passes, runs, integrates, or is deployed.
+- Use existing canonical documentation when it is the project's designated source of truth and verify it when the task is a current-state audit.
+- Use neighboring documents for language, format, and terminology, not as sole proof of a technical fact.
 
-1. User requirements and accepted decisions
-2. Project specifications, contracts, schemas, or generated API definitions
-3. Current implementation and configuration, when reading them is allowed
-4. Existing canonical documentation
-5. Neighboring documents for style only
+Report unresolved conflicts or missing material facts instead of guessing. A user request for new behavior is not evidence that the behavior already exists, and a specification does not prove that its implementation is current.
 
-Report unresolved conflicts or missing material facts instead of guessing.
+For a cross-boundary claim, trace the selected path as well as both endpoint definitions: mode selection, configuration defaults, call sites, guards, transport topology, registration, and response handling. A static difference is evidence of a contract difference; it becomes an active integration or runtime failure only when the connecting path and its preconditions are established.
 
 ## Writing Principles
 
@@ -27,6 +28,8 @@ Report unresolved conflicts or missing material facts instead of guessing.
 - Define unfamiliar terms once and use them consistently.
 - Prefer one canonical explanation and link to it instead of duplicating content.
 - Keep paragraphs short and remove sections that add no information.
+- Keep current behavior, interface-specific behavior, known gaps, and future work visibly distinct.
+- Describe verification scope precisely: source inspection, a specific command, an end-to-end scenario, or deployed runtime evidence.
 
 ## Contracts and Examples
 

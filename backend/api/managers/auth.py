@@ -45,7 +45,7 @@ class AuthManager:
                 pydantic.UserCreateDTO(
                     email=user_info.email,
                     name=user_info.name,
-                    password=Services.auth.get_password_hash(user_info.password),
+                    password_hash=Services.auth.get_password_hash(user_info.password),
                 ),
                 conflict_fields={"email"},
                 on_conflict="nothing",
@@ -76,8 +76,9 @@ class AuthManager:
             user = await Database.users.get(email=email, session=session)
             if (
                 not user
-                or not user.password
-                or not Services.auth.verify_password(password, user.password)
+                or not user.is_active
+                or not user.password_hash
+                or not Services.auth.verify_password(password, user.password_hash)
             ):
                 raise PmsError(401, "INVALID_CREDENTIALS", "Invalid email or password.")
             return pydantic.PostLoginResponse(

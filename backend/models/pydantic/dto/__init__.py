@@ -28,6 +28,11 @@ from models.pydantic.dto.project_user_dto import (
     ProjectUserDTO,
     ProjectUserUpdateFieldsDTO,
 )
+from models.pydantic.dto.service_user_dto import (
+    ServiceUserCreateDTO,
+    ServiceUserDTO,
+    ServiceUserUpdateFieldsDTO,
+)
 from models.pydantic.dto.state_dto import (
     ProjectStateCreateDTO,
     ProjectStateDTO,
@@ -42,13 +47,20 @@ from models.pydantic.dto.work_item_dto import (
     WorkItemUpdateFieldsDTO,
 )
 from models.pydantic.dto.user_dto import (
-    UserAccessDataDTO,
     UserAuthorizedDTO,
     UserCreateDTO,
     UserDTO,
     UserUpdateFieldsDTO,
     UserWithPasswordDTO,
+    normalize_email,
+)
+from models.pydantic.dto.workspace_user_dto import (
+    WorkspaceUserCreateDTO,
+    WorkspaceUserDetailsDTO,
+    WorkspaceUserDTO,
+    WorkspaceUserUpdateFieldsDTO,
 )
 
 
 __all__ = [name for name in globals() if name.endswith("DTO")]
+__all__.append("normalize_email")

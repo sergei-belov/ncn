@@ -1,4 +1,5 @@
 import type { Agent } from "@/entities/agent";
+import type { AuthzUser, ProjectMembership, WorkspaceMembership } from "@/entities/authz";
 import type { Epic } from "@/entities/epic";
 import type { MemberSummary } from "@/entities/member";
 import type { Project } from "@/entities/project";
@@ -8,7 +9,7 @@ import type { UUID } from "@/shared/lib/domain-primitives";
 import { permissionsForRole } from "@/entities/project";
 
 export interface MockDatabase {
-  schemaVersion: 2;
+  schemaVersion: 3;
   boardVersions: Record<UUID, number>;
   projects: Project[];
   agents: Agent[];
@@ -16,9 +17,13 @@ export interface MockDatabase {
   workItems: WorkItem[];
   epics: Epic[];
   members: MemberSummary[];
+  authzUsers: AuthzUser[];
+  workspaceMemberships: WorkspaceMembership[];
+  projectMemberships: ProjectMembership[];
+  currentUserId: UUID;
 }
 
-const STORAGE_KEY = "plane-inspired-mvp-db-v2";
+const STORAGE_KEY = "plane-inspired-mvp-db-v3";
 
 const now = "2026-08-10T08:00:00.000Z";
 
@@ -240,8 +245,100 @@ export function createSeedDatabase(): MockDatabase {
     }),
   ];
 
+  const authzUsers: AuthzUser[] = members.map((member) => ({
+    id: member.id,
+    email: member.email,
+    name: member.displayName,
+    isActive: member.isActive,
+  }));
+  const user = (userId: UUID): AuthzUser => authzUsers.find((candidate) => candidate.id === userId)!;
+
+  const workspaceMemberships: WorkspaceMembership[] = [
+    { id: "workspace-user-alex", workspaceId: "demo", userId: "member-alex", user: user("member-alex"), role: "owner", version: 1 },
+    { id: "workspace-user-maria", workspaceId: "demo", userId: "member-maria", user: user("member-maria"), role: "admin", version: 1 },
+    { id: "workspace-user-ilya", workspaceId: "demo", userId: "member-ilya", user: user("member-ilya"), role: "member", version: 1 },
+    { id: "workspace-user-nina", workspaceId: "demo", userId: "member-nina", user: user("member-nina"), role: "member", version: 1 },
+  ];
+
+  const projectMemberships: ProjectMembership[] = [
+    {
+      id: "project-user-web-alex",
+      workspaceId: "demo",
+      projectId: "project-web",
+      userId: "member-alex",
+      user: user("member-alex"),
+      role: "admin",
+      source: "bootstrap",
+      version: 1,
+      serviceRestrictions: [],
+    },
+    {
+      id: "project-user-web-maria",
+      workspaceId: "demo",
+      projectId: "project-web",
+      userId: "member-maria",
+      user: user("member-maria"),
+      role: "member",
+      source: "manual",
+      version: 1,
+      serviceRestrictions: [
+        {
+          id: "service-user-web-maria-agents",
+          projectUserId: "project-user-web-maria",
+          serviceId: "ncn-agents",
+          role: "viewer",
+          version: 1,
+        },
+      ],
+    },
+    {
+      id: "project-user-web-ilya",
+      workspaceId: "demo",
+      projectId: "project-web",
+      userId: "member-ilya",
+      user: user("member-ilya"),
+      role: "viewer",
+      source: "manual",
+      version: 1,
+      serviceRestrictions: [],
+    },
+    {
+      id: "project-user-web-nina",
+      workspaceId: "demo",
+      projectId: "project-web",
+      userId: "member-nina",
+      user: user("member-nina"),
+      role: "member",
+      source: "manual",
+      version: 1,
+      serviceRestrictions: [],
+    },
+    {
+      id: "project-user-ncn-alex",
+      workspaceId: "demo",
+      projectId: "project-ncn",
+      userId: "member-alex",
+      user: user("member-alex"),
+      role: "admin",
+      source: "bootstrap",
+      version: 1,
+      serviceRestrictions: [],
+    },
+    {
+      id: "project-user-archive-alex",
+      workspaceId: "demo",
+      projectId: "project-archive",
+      userId: "member-alex",
+      user: user("member-alex"),
+      role: "admin",
+      source: "bootstrap",
+      version: 1,
+      serviceRestrictions: [],
+    },
+  ];
+
   return {
-    schemaVersion: 2,
+    schemaVersion: 3,
     boardVersions: { "project-web": 1, "project-ncn": 1, "project-archive": 1 },
     projects: [
       project("project-web", "Кабинет клиента", "WEB", "#6d5dfc"),
@@ -271,6 +368,10 @@ export function createSeedDatabase(): MockDatabase {
     workItems,
     epics,
     members,
+    authzUsers,
+    workspaceMemberships,
+    projectMemberships,
+    currentUserId: "member-alex",
   };
 }
 
@@ -288,7 +389,15 @@ export function readDatabase(): MockDatabase {
   }
   try {
     const database = JSON.parse(raw) as Partial<MockDatabase>;
-    if (database.schemaVersion === 2 && Array.isArray(database.agents)) return database as MockDatabase;
+    if (
+      database.schemaVersion === 3 &&
+      Array.isArray(database.agents) &&
+      Array.isArray(database.authzUsers) &&
+      Array.isArray(database.workspaceMemberships) &&
+      Array.isArray(database.projectMemberships)
+    ) {
+      return database as MockDatabase;
+    }
     const seed = createSeedDatabase();
     writeDatabase(seed);
     return seed;

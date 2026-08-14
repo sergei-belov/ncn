@@ -13,6 +13,7 @@ class PrometheusCollector(BaseService):
     """Collect in-process application and Kafka consumer metrics."""
 
     consumer_objects: prometheus_client.Counter  # Metrics for objects created in the database
+    authorization_operations: prometheus_client.Counter
 
     def __init__(self):
         """Initialize labeled counters for consumer outcomes."""
@@ -22,7 +23,27 @@ class PrometheusCollector(BaseService):
             "Consumer processing results",
             labelnames=["type"],
         )
+        self.authorization_operations = prometheus_client.Counter(
+            "authorization_operations",
+            "Authorization decisions and access mutations",
+            labelnames=["operation", "result", "reason"],
+        )
         super().__init__()
+
+    def record_authorization(self, operation: str, result: str, reason: str) -> None:
+        """Increment a bounded authorization operation metric.
+
+        Args:
+            operation: Stable operation family.
+            result: Stable success, denial, or error outcome.
+            reason: Stable machine-readable result reason.
+        """
+
+        self.authorization_operations.labels(
+            operation=operation,
+            result=result,
+            reason=reason,
+        ).inc()
 
     def increment_consumer_total(self, topic: str, count: int = 1) -> None:
         """Increment the number of messages consumed from a topic."""

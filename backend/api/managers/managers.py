@@ -1,5 +1,6 @@
 from api.managers.agents import AgentsManager
 from api.managers.auth import AuthManager
+from api.managers.authorization import AuthorizationManager
 from api.managers.board import BoardManager
 from api.managers.epics import EpicsManager
 from api.managers.projects import ProjectsManager
@@ -12,6 +13,7 @@ class Managers:
 
     agents = AgentsManager()
     auth = AuthManager()
+    authorization = AuthorizationManager()
     projects = ProjectsManager()
     states = StatesManager()
     work_items = WorkItemsManager()

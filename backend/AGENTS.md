@@ -91,6 +91,10 @@ All DB operations extend `BaseDatabaseGeneric` providing:
 - Pagination and sorting
 - Transaction management
 
+Database row locks are not used in this project. Do not add `SELECT ... FOR UPDATE`,
+SQLAlchemy `.with_for_update()`, or repository lock helpers. Use generic reads,
+database constraints, and optimistic version filters for concurrent changes.
+
 ### Dependency Injection
 Uses FastAPI's dependency injection:
 - HTTP dependencies for authentication

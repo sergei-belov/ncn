@@ -1,6 +1,7 @@
 import type { Plugin } from "vue";
 
 import { agentApiKey, httpAgentApi } from "@/entities/agent";
+import { authzApiKey, httpAuthzApi } from "@/entities/authz";
 import { boardApiKey, httpBoardApi } from "@/entities/board";
 import { epicApiKey, httpEpicApi } from "@/entities/epic";
 import { httpProjectApi, projectApiKey } from "@/entities/project";
@@ -10,11 +11,13 @@ import { env } from "@/shared/config/env";
 import { runtimeControlsKey } from "@/shared/config/runtime-controls";
 
 import { resetDatabase } from "../mocks/database";
+import { mockAuthzApi } from "../mocks/authz-api";
 import { mockProjectManagementApi } from "../mocks/project-management-api";
 
 export const projectManagementApiPlugin: Plugin = {
   install(app) {
     const mock = env.VITE_API_MODE === "mock";
+    app.provide(authzApiKey, mock ? mockAuthzApi : httpAuthzApi);
     app.provide(agentApiKey, mock ? mockProjectManagementApi : httpAgentApi);
     app.provide(projectApiKey, mock ? mockProjectManagementApi : httpProjectApi);
     app.provide(boardApiKey, mock ? mockProjectManagementApi : httpBoardApi);

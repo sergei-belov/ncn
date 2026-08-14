@@ -1,3 +1,9 @@
+from models.enum.authz import (
+    AuthorizationDecisionReason,
+    AuthorizationScope,
+    ProjectMembershipSource,
+    WorkspaceRole,
+)
 from models.enum.pms import (
     AgentApprovalMode,
     AgentKind,
@@ -18,11 +24,15 @@ __all__ = [
     "AgentKind",
     "AgentMemoryPolicy",
     "AgentStatus",
+    "AuthorizationDecisionReason",
+    "AuthorizationScope",
     "DueStatus",
     "EpicStatus",
     "Priority",
     "ProjectAccess",
+    "ProjectMembershipSource",
     "ProjectRole",
     "ProjectStatus",
     "StateGroup",
+    "WorkspaceRole",
 ]

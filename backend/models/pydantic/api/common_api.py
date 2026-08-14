@@ -48,8 +48,10 @@ class ErrorDetail(APIModel):
 
     code: str
     message: str
+    correlation_id: str | None = None
     field_errors: dict[str, list[FieldError]] | None = None
     details: dict | None = None
+    current: dict | None = None
 
 
 class ApiError(APIModel):

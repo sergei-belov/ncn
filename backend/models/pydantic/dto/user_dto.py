@@ -6,14 +6,29 @@ from libs.cp_postgresql.models.sqlalchemy import OrmModel, UUIDModel
 from models import enum
 
 
+def normalize_email(value: str) -> str:
+    """Return the canonical email key used by every identity flow.
+
+    Args:
+        value: Raw email-like value supplied by an identity boundary.
+
+    Returns:
+        The stripped and Unicode case-normalized value.
+    """
+
+    return value.strip().casefold()
+
+
 class UserDTO(OrmModel):
     """Internal representation of an application user."""
 
     id: UUID
     email: str
     name: str
-    password: str | None
+    password_hash: str | None
+    is_active: bool
     created_at: datetime
+    updated_at: datetime
 
 
 class UserCreateDTO(UUIDModel):
@@ -21,31 +36,24 @@ class UserCreateDTO(UUIDModel):
 
     email: str
     name: str
-    password: str | None = None
+    password_hash: str | None = None
+    is_active: bool = True
 
 
 class UserWithPasswordDTO(UserCreateDTO):
     """User creation fields requiring a password value."""
 
-    password: str
+    password_hash: str
 
 
 class UserUpdateFieldsDTO(NoneValidationMixin):
     """Optional fields used to update an application user."""
 
     name: str | None = None
-    password: str | None = None
+    password_hash: str | None = None
+    is_active: bool | None = None
 
-    _none_allowed_fields = {"password"}
-
-
-class UserAccessDataDTO(UserDTO):
-    """User data with an optional project authorization relation."""
-
-    project_user_id: UUID | None
-    project_id: UUID | None
-    workspace_slug: str | None
-    project_role: enum.ProjectRole | None
+    _none_allowed_fields = {"password_hash"}
 
 
 class UserAuthorizedDTO(UserDTO):

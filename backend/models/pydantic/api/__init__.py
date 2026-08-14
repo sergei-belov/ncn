@@ -1,5 +1,6 @@
 from models.pydantic.api.agent_api import *  # noqa: F403
 from models.pydantic.api.auth_api import *  # noqa: F403
+from models.pydantic.api.authorization_api import *  # noqa: F403
 from models.pydantic.api.common_api import *  # noqa: F403
 from models.pydantic.api.entity_api import *  # noqa: F403
 from models.pydantic.api.epic_api import *  # noqa: F403

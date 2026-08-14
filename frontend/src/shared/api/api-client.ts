@@ -10,21 +10,41 @@ interface RequestOptions<T> {
   headers?: HeadersInit;
   idempotencyKey?: string;
   version?: number;
+  body?: unknown;
 }
 
-interface WireApiError {
-  error?: {
-    code?: string;
-    message?: string;
-    request_id?: string;
-    field_errors?: Record<string, Array<{ message?: string }>>;
-  };
+interface WireErrorDetails {
+  code?: string;
+  message?: string;
+  request_id?: string;
+  correlation_id?: string;
+  field_errors?: Record<string, unknown>;
+  current?: unknown;
+}
+
+interface WireApiError extends WireErrorDetails {
+  error?: WireErrorDetails;
+}
+
+function fieldErrorMessages(value: unknown): string[] {
+  if (typeof value === "string") return [value];
+  if (!Array.isArray(value)) return ["Некорректное значение"];
+  return (value as unknown[]).map((entry) => {
+    if (typeof entry === "string") return entry;
+    if (typeof entry === "object" && entry) {
+      const candidate = entry as Record<string, unknown>;
+      if (typeof candidate.message === "string") return candidate.message;
+    }
+    return "Некорректное значение";
+  });
 }
 
 async function request<T>(method: string, path: string, body: unknown, options: RequestOptions<T>): Promise<T> {
   const headers = new Headers(options.headers);
+  const correlationId = crypto.randomUUID();
   headers.set("Accept", "application/json");
-  headers.set("X-Request-ID", crypto.randomUUID());
+  headers.set("X-Correlation-ID", correlationId);
+  headers.set("X-Request-ID", correlationId);
   if (body !== undefined) headers.set("Content-Type", "application/json");
   if (options.idempotencyKey) headers.set("Idempotency-Key", options.idempotencyKey);
   if (options.version !== undefined) headers.set("If-Match", `"${options.version}"`);
@@ -39,18 +59,17 @@ async function request<T>(method: string, path: string, body: unknown, options: 
 
   if (!response.ok) {
     const payload = (await response.json().catch(() => ({}))) as WireApiError;
+    const details: WireErrorDetails = payload.error ?? payload;
     const fieldErrors = Object.fromEntries(
-      Object.entries(payload.error?.field_errors ?? {}).map(([field, errors]) => [
-        field,
-        errors.map((error) => error.message ?? "Некорректное значение"),
-      ]),
+      Object.entries(details.field_errors ?? {}).map(([field, errors]) => [field, fieldErrorMessages(errors)]),
     );
     throw new ApiError({
       status: response.status,
-      code: payload.error?.code ?? "REQUEST_FAILED",
-      message: payload.error?.message ?? `HTTP ${response.status}`,
-      requestId: payload.error?.request_id,
+      code: details.code ?? "REQUEST_FAILED",
+      message: details.message ?? `HTTP ${response.status}`,
+      requestId: details.request_id ?? details.correlation_id ?? response.headers.get("X-Correlation-ID") ?? undefined,
       fieldErrors,
+      current: details.current,
     });
   }
 
@@ -68,7 +87,10 @@ export const apiClient = {
   patch<T>(path: string, body: unknown, options: RequestOptions<T>): Promise<T> {
     return request("PATCH", path, body, options);
   },
+  put<T>(path: string, body: unknown, options: RequestOptions<T>): Promise<T> {
+    return request("PUT", path, body, options);
+  },
   delete<T>(path: string, options: RequestOptions<T>): Promise<T> {
-    return request("DELETE", path, undefined, options);
+    return request("DELETE", path, options.body, options);
   },
 };

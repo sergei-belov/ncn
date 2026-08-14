@@ -60,9 +60,10 @@ def get_user_email(
     Raises:
         PmsError: If the token is absent, invalid, or lacks a valid email.
     """
+
     try:
         payload = Services.auth.decode_access_token(token=token)
-        return payload.email.strip().casefold()
+        return pydantic.normalize_email(payload.email)
     except (PyJWTError, ValidationError, AttributeError, TypeError, ValueError) as exc:
         raise PmsError(401, "AUTH_REQUIRED", "A valid bearer token is required.") from exc
 
@@ -70,25 +71,42 @@ def get_user_email(
 async def get_user(
     request: Request,
     email: Annotated[str, Depends(get_user_email)],
-    session: Annotated[AsyncSession, Depends(dependency_session)],
 ) -> pydantic.UserDTO:
-    """Resolve the authenticated application user for a request.
+    """Resolve or create the authenticated application user for a request.
 
     Args:
         request: Current HTTP request.
         email: Normalized email extracted from the bearer token.
-        session: Request-scoped database session.
 
     Returns:
-        The authenticated user DTO.
+        The existing or newly created authenticated user DTO.
+
+    Side Effects:
+        Creates and commits a user with the normalized email as its initial
+        display name when no matching user exists.
 
     Raises:
-        PmsError: If the token subject does not map to an application user or
-            the user has exceeded the request rate limit.
+        PmsError: If user provisioning fails, the user is disabled, or the
+            user has exceeded the request rate limit.
     """
-    user = await Database.users.get(email=email, session=session)
-    if user is None:
-        raise PmsError(401, "AUTH_REQUIRED", "The authenticated user does not exist.")
+    async with Services.database.session() as session:
+        user = await Database.users.get(email=email, session=session)
+        if user is None:
+            user = await Database.users.upsert(
+                data=pydantic.UserCreateDTO(
+                    email=email,
+                    name=email,
+                ),
+                conflict_fields={"email"},
+                on_conflict="nothing",
+                session=session,
+            )
+            if user is None:
+                user = await Database.users.get(email=email, session=session)
+            if user is None:
+                raise PmsError(503, "USER_PROVISIONING_FAILED", "The authenticated user could not be created.")
+        if not user.is_active:
+            raise PmsError(403, "USER_DISABLED", "The authenticated user is disabled.")
     _enforce_user_rate_limit(user.id)
     LOGGER.info("method=%r path=%r user_id=%r", request.method, request.url.path, str(user.id))
     return user
@@ -98,7 +116,7 @@ async def get_user_authorized(
     request: Request,
     workspace_slug: Annotated[str, Path(min_length=1, max_length=100)],
     project_id: Annotated[UUID, Path(description="ID of project")],
-    email: Annotated[str, Depends(get_user_email)],
+    authenticated_user: Annotated[pydantic.UserDTO, Depends(get_user)],
     session: Annotated[AsyncSession, Depends(dependency_session)],
 ) -> pydantic.UserAuthorizedDTO:
     """Resolve a user and require membership in the routed project.
@@ -107,33 +125,38 @@ async def get_user_authorized(
         request: Current HTTP request.
         workspace_slug: Workspace from the route.
         project_id: Project from the route.
-        email: Normalized email extracted from the bearer token.
+        authenticated_user: Active persisted user resolved for the request.
         session: Request-scoped database session.
 
     Returns:
         User data enriched with the validated project authorization relation.
 
     Raises:
-        PmsError: If the user is unknown, lacks project membership, or exceeds
-            the request rate limit.
+        PmsError: If the routed project is absent or the authenticated user
+            lacks its matching project membership.
     """
-    user = await Database.users.get_extended_by_email(
-        email=email,
-        project_id=project_id,
+    project = await Database.projects.get(
+        id=project_id,
         workspace_slug=workspace_slug,
         session=session,
     )
-    if user is None:
-        raise PmsError(401, "AUTH_REQUIRED", "The authenticated user does not exist.")
-    if (
-        user.project_user_id is None
-        or user.project_id is None
-        or user.workspace_slug is None
-        or user.project_role is None
-    ):
+    if project is None:
         raise PmsError(403, "FORBIDDEN", "Project access is required.")
-    authorized = pydantic.UserAuthorizedDTO.model_validate(user)
-    _enforce_user_rate_limit(authorized.id)
+    membership = await Database.project_users.get(
+        project_id=project_id,
+        workspace_id=workspace_slug,
+        user_id=authenticated_user.id,
+        session=session,
+    )
+    if membership is None:
+        raise PmsError(403, "FORBIDDEN", "Project access is required.")
+    authorized = pydantic.UserAuthorizedDTO(
+        **authenticated_user.model_dump(),
+        project_user_id=membership.id,
+        project_id=project.id,
+        workspace_slug=project.workspace_slug,
+        project_role=membership.role,
+    )
     LOGGER.info(
         "method=%r path=%r user_id=%r project_role=%r",
         request.method,

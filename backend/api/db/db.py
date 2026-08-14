@@ -4,7 +4,9 @@ from api.db.epics import EpicAssigneesDb, EpicsDb
 from api.db.project_users import ProjectUsersDb
 from api.db.projects import ProjectsDb
 from api.db.states import ProjectStatesDb
+from api.db.service_users import ServiceUsersDb
 from api.db.users import UsersDb
+from api.db.workspace_users import WorkspaceUsersDb
 from api.db.work_items import WorkItemAssigneesDb, WorkItemsDb
 
 
@@ -15,6 +17,8 @@ class Database:
     projects = ProjectsDb()
     users = UsersDb()
     project_users = ProjectUsersDb()
+    workspace_users = WorkspaceUsersDb()
+    service_users = ServiceUsersDb()
     states = ProjectStatesDb()
     work_items = WorkItemsDb()
     work_item_assignees = WorkItemAssigneesDb()

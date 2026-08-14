@@ -15,6 +15,11 @@ export const routes: RouteRecordRaw[] = [
         component: () => import("@/pages/projects/ProjectsPage.vue"),
       },
       {
+        path: "settings/access",
+        name: routeNames.workspaceAccess,
+        component: () => import("@/pages/workspace-access/WorkspaceAccessPage.vue"),
+      },
+      {
         path: "projects/:projectId",
         component: () => import("@/widgets/project-navigation/ProjectLayout.vue"),
         children: [
@@ -63,6 +68,11 @@ export const routes: RouteRecordRaw[] = [
             path: "settings/states",
             name: routeNames.stateSettings,
             component: () => import("@/pages/project-settings/StateSettingsPage.vue"),
+          },
+          {
+            path: "settings/access",
+            name: routeNames.projectAccess,
+            component: () => import("@/pages/project-access/ProjectAccessPage.vue"),
           },
         ],
       },

@@ -256,8 +256,10 @@ class ProjectsManager:
             await Database.project_users.create(
                 pydantic.ProjectUserCreateDTO(
                     project_id=project.id,
+                    workspace_id=workspace_slug,
                     user_id=actor.id,
                     role=enum.ProjectRole.ADMIN,
+                    source=enum.ProjectMembershipSource.BOOTSTRAP,
                 ),
                 session=session,
                 mode="json",

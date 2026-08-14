@@ -3,6 +3,7 @@ export class ApiError extends Error {
   readonly code: string;
   readonly requestId: string;
   readonly fieldErrors: Record<string, string[]>;
+  readonly current: unknown;
 
   constructor(options: {
     status: number;
@@ -10,6 +11,7 @@ export class ApiError extends Error {
     message: string;
     requestId?: string;
     fieldErrors?: Record<string, string[]>;
+    current?: unknown;
   }) {
     super(options.message);
     this.name = "ApiError";
@@ -17,6 +19,7 @@ export class ApiError extends Error {
     this.code = options.code;
     this.requestId = options.requestId ?? crypto.randomUUID();
     this.fieldErrors = options.fieldErrors ?? {};
+    this.current = options.current;
   }
 }
 

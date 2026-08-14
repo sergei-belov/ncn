@@ -3,9 +3,9 @@
 FastAPI service for NCN project management: projects, board states, work items,
 epics, and per-user board preferences.
 
-The current implementation and API inventory are documented in
-[`spec.md`](./spec.md). Repository-wide architecture and working rules are in
-[`../AGENTS.md`](../AGENTS.md), with backend-specific conventions in
+The current cross-stack implementation and API inventory are documented in
+[`../docs/README.md`](../docs/README.md). [`spec.md`](./spec.md) is retained as an
+earlier PMS-focused snapshot. Backend-specific conventions are in
 [`AGENTS.md`](./AGENTS.md).
 
 ## Development commands

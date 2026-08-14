@@ -4,6 +4,7 @@ from uuid import UUID
 from pydantic import Field, field_validator
 
 from models.pydantic.api.common_api import APIModel
+from models.pydantic.dto.user_dto import normalize_email
 
 
 class UserAPI(APIModel):
@@ -12,7 +13,9 @@ class UserAPI(APIModel):
     id: UUID
     email: str
     name: str
+    is_active: bool
     created_at: datetime
+    updated_at: datetime
 
 
 class PostRegisterRequest(APIModel):
@@ -27,7 +30,7 @@ class PostRegisterRequest(APIModel):
     def normalize_email(cls, value: str) -> str:
         """Strip and case-normalize a submitted email address."""
 
-        return value.strip().casefold() if isinstance(value, str) else value
+        return normalize_email(value) if isinstance(value, str) else value
 
     @field_validator("name", mode="before")
     @classmethod

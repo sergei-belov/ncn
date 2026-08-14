@@ -248,6 +248,21 @@ export const mockProjectManagementApi: ProjectManagementApi = {
       version: 1,
     }));
     database.projects.push(project);
+    const creator = database.authzUsers.find((user) => user.id === database.currentUserId);
+    if (!creator) {
+      throw new ApiError({ status: 409, code: "USER_NOT_FOUND", message: "Текущий пользователь не найден" });
+    }
+    database.projectMemberships.push({
+      id: createId("project-user"),
+      workspaceId: workspaceSlug,
+      projectId,
+      userId: creator.id,
+      user: creator,
+      role: "admin",
+      source: "bootstrap",
+      version: 1,
+      serviceRestrictions: [],
+    });
     database.agents.push(makeCoordinator(projectId, timestamp));
     database.states.push(...states);
     database.boardVersions[projectId] = 1;

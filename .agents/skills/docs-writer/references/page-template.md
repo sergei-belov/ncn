@@ -7,6 +7,8 @@ Adapt this structure to the project. Omit sections that are irrelevant or alread
 
 Route: `[route]`
 
+Shell: [Shared shell/layout or “Standalone”](relative-link.md)
+
 ## Purpose
 
 [One or two sentences describing who uses the page and what they accomplish.]
@@ -16,7 +18,7 @@ Route: `[route]`
 - [Primary user action and result]
 - [Important rule, permission, or transition]
 
-## Layout
+## Page structure
 
 - **[Area]**: [content and placement]
 - **[Area]**: [content and placement]
@@ -40,7 +42,8 @@ Route: `[route]`
 Keep the document concise:
 
 - Describe observable behavior, not every component or styling detail.
+- Name the shared shell or layout and link to its canonical document. Describe only page-specific structure here.
 - Link to canonical API models instead of copying large contracts.
 - Add a compact typed request or response model only when the page owns or clarifies that contract.
-- Include accessibility, responsive behavior, analytics, or optimistic updates only when they materially affect the page.
+- Include accessibility, responsive variants, analytics, or optimistic updates only when they materially affect page behavior or structure.
 - Verify every route, state, endpoint, and link; mark unknown contracts as documentation gaps.

@@ -4,7 +4,9 @@ from models.sqlalchemy.epics import Epic, EpicAssignee
 from models.sqlalchemy.project_users import ProjectUser
 from models.sqlalchemy.projects import Project
 from models.sqlalchemy.states import ProjectState
+from models.sqlalchemy.service_users import ServiceUser
 from models.sqlalchemy.users import User
+from models.sqlalchemy.workspace_users import WorkspaceUser
 from models.sqlalchemy.work_items import WorkItem, WorkItemAssignee
 
 
@@ -16,7 +18,9 @@ __all__ = [
     "Project",
     "ProjectUser",
     "ProjectState",
+    "ServiceUser",
     "User",
+    "WorkspaceUser",
     "WorkItem",
     "WorkItemAssignee",
 ]

@@ -1,5 +1,9 @@
 # NCN PMS Backend Application Specification
 
+> Historical snapshot: this file predates the current authorization-management
+> routes and tables. Use [`../docs/README.md`](../docs/README.md) for the current
+> implementation-derived platform contract.
+
 ## Overview
 
 The current backend is the `ncn-pms` FastAPI service. It owns the project-management

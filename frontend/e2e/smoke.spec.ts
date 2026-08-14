@@ -50,6 +50,22 @@ test("creates an assistant and saves its settings", async ({ page }) => {
   await expect(page.getByText("Отключён", { exact: true })).toBeVisible();
 });
 
+test("updates project access and restores inherited service access", async ({ page }) => {
+  await page.getByRole("button", { name: /Кабинет клиента/ }).click();
+  await page.getByRole("link", { name: "Настройки" }).click();
+  await page.locator('a[href="/demo/projects/project-web/settings/access"]').click();
+  await expect(page.getByRole("heading", { name: "Управление доступом" })).toBeVisible();
+
+  await page.getByRole("button", { name: "Изменить роль Мария Волкова" }).click();
+  await page.getByRole("dialog").getByRole("combobox").selectOption("viewer");
+  await page.getByRole("dialog").getByRole("button", { name: "Сохранить" }).click();
+  await expect(page.getByText("Роль участника обновлена").last()).toBeVisible();
+
+  await page.getByRole("button", { name: "Изменить ограничение ncn-agents" }).click();
+  await page.getByRole("dialog").getByRole("button", { name: "Восстановить наследование" }).click();
+  await expect(page.locator("p:visible", { hasText: "Наследуется из проекта: Наблюдатель" })).toBeVisible();
+});
+
 test("collapses a status into a compact rail and expands it", async ({ page }) => {
   await page.getByRole("button", { name: /Кабинет клиента/ }).click();
   const column = page.locator('[data-state-id="web-todo"]');

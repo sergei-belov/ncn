@@ -1,10 +1,31 @@
 import { describe, expect, it } from "vitest";
 
+import {
+  projectMembershipFormSchema,
+  serviceRestrictionFormSchema,
+  workspaceMembershipFormSchema,
+} from "@/features/access-manage";
 import { epicSchema } from "@/features/epic-create";
 import { agentSchema, toAgentInput } from "@/features/agent-manage";
 import { projectSchema } from "@/features/project-create";
 
 describe("form schemas", () => {
+  it("validates bounded authz membership and service inputs", () => {
+    expect(workspaceMembershipFormSchema.parse({ userId: "user-1", role: "admin" })).toEqual({
+      userId: "user-1",
+      role: "admin",
+    });
+    expect(projectMembershipFormSchema.parse({ userId: "user-1", role: "viewer" })).toEqual({
+      userId: "user-1",
+      role: "viewer",
+    });
+    expect(serviceRestrictionFormSchema.parse({ serviceId: "ncn-agents", role: "member" })).toEqual({
+      serviceId: "ncn-agents",
+      role: "member",
+    });
+    expect(() => serviceRestrictionFormSchema.parse({ serviceId: "Unsafe Service", role: "viewer" })).toThrow();
+  });
+
   it("normalizes a valid project identifier", () => {
     const result = projectSchema.parse({ name: "Новый проект", identifier: "web2", description: "", access: "workspace" });
     expect(result.identifier).toBe("WEB2");

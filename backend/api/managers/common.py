@@ -42,6 +42,7 @@ class PmsError(Exception):
         message: Human-readable error message.
         details: Optional structured error context.
         field_errors: Optional validation failures keyed by field name.
+        current: Optional canonical resource state for optimistic conflicts.
     """
 
     def __init__(
@@ -52,6 +53,7 @@ class PmsError(Exception):
         *,
         details: dict | None = None,
         field_errors: dict | None = None,
+        current: dict | None = None,
     ):
         """Initialize a domain API error.
 
@@ -61,12 +63,14 @@ class PmsError(Exception):
             message: Human-readable error message.
             details: Optional structured error context.
             field_errors: Optional validation failures keyed by field name.
+            current: Optional canonical resource state for optimistic conflicts.
         """
         self.status_code = status_code
         self.code = code
         self.message = message
         self.details = details
         self.field_errors = field_errors
+        self.current = current
         super().__init__(message)
 
 
