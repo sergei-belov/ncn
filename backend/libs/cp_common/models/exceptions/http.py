@@ -87,7 +87,7 @@ class ObjectAlreadyExistsHTTPException(BaseHTTPException):
 class ContentSizeHTTPException(BaseHTTPException):
     """Report content that exceeds the accepted size."""
 
-    status_code: int = status.HTTP_413_REQUEST_ENTITY_TOO_LARGE
+    status_code: int = status.HTTP_413_CONTENT_TOO_LARGE
     message: str = "Размер объекта слишком большой"
     code: str = "413"
 
@@ -103,7 +103,7 @@ class MediaTypeHTTPException(BaseHTTPException):
 class UnprocessableEntityHTTPException(BaseHTTPException):
     """Report semantically invalid request data."""
 
-    status_code: int = status.HTTP_422_UNPROCESSABLE_ENTITY
+    status_code: int = status.HTTP_422_UNPROCESSABLE_CONTENT
     message: str = "Некорректные входящие данные для выполнения запрашиваемого действия"
     code: str = "422"
 

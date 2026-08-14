@@ -1,5 +1,6 @@
 import logging
 from datetime import (
+    UTC,
     datetime,
     timedelta,
 )
@@ -115,7 +116,7 @@ class Authorization:
             str: JWT access token
         """
         expires_delta = expires_delta or self._expires_delta
-        expire = datetime.utcnow() + timedelta(seconds=expires_delta)
+        expire = datetime.now(UTC) + timedelta(seconds=expires_delta)
         jwt_payload = JwtPayload(email=email, sub=subject, exp=expire)
         encoded_jwt = jwt.encode(
             payload=jwt_payload.model_dump(exclude_none=True),

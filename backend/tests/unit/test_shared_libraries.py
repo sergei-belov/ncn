@@ -17,12 +17,15 @@ from libs.cp_common.services.names_resolver import NamesResolver
 from tests.unit.factories import USER_ID
 
 
+JWT_SECRET = "unit-test-secret-with-at-least-32-bytes"
+
+
 def test_local_token_round_trip_preserves_identity_claims() -> None:
     """Sign and verify a local token while preserving email and subject claims."""
 
     authorization = Authorization(
         flow=AuthFlow.LOCAL,
-        secret_key="unit-test-secret",
+        secret_key=JWT_SECRET,
         algorythm="HS256",
         login_url="/login",
         expires_delta=60,
@@ -44,7 +47,7 @@ def test_password_hash_verification_accepts_only_original_secret() -> None:
 
     authorization = Authorization(
         flow=AuthFlow.LOCAL,
-        secret_key="unit-test-secret",
+        secret_key=JWT_SECRET,
         algorythm="HS256",
         login_url="/login",
         expires_delta=60,

@@ -87,7 +87,7 @@ class APIGenericRouter(APIRouter):
                 status.HTTP_401_UNAUTHORIZED: {"model": HTTPExceptionResponse},
                 status.HTTP_403_FORBIDDEN: {"model": HTTPExceptionResponse},
                 status.HTTP_404_NOT_FOUND: {"model": HTTPExceptionResponse},
-                status.HTTP_422_UNPROCESSABLE_ENTITY: {"model": HTTPExceptionResponse},
+                status.HTTP_422_UNPROCESSABLE_CONTENT: {"model": HTTPExceptionResponse},
                 status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": HTTPExceptionResponse},
             },
         )
@@ -134,7 +134,7 @@ class APIGenericRouter(APIRouter):
                 status.HTTP_401_UNAUTHORIZED: {"model": HTTPExceptionResponse},
                 status.HTTP_403_FORBIDDEN: {"model": HTTPExceptionResponse},
                 status.HTTP_404_NOT_FOUND: {"model": HTTPExceptionResponse},
-                status.HTTP_422_UNPROCESSABLE_ENTITY: {"model": HTTPExceptionResponse},
+                status.HTTP_422_UNPROCESSABLE_CONTENT: {"model": HTTPExceptionResponse},
                 status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": HTTPExceptionResponse},
             },
         )
@@ -201,7 +201,7 @@ class APIGenericRouter(APIRouter):
                 status.HTTP_401_UNAUTHORIZED: {"model": HTTPExceptionResponse},
                 status.HTTP_403_FORBIDDEN: {"model": HTTPExceptionResponse},
                 status.HTTP_404_NOT_FOUND: {"model": HTTPExceptionResponse},
-                status.HTTP_422_UNPROCESSABLE_ENTITY: {"model": HTTPExceptionResponse},
+                status.HTTP_422_UNPROCESSABLE_CONTENT: {"model": HTTPExceptionResponse},
                 status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": HTTPExceptionResponse},
             },
         )
@@ -243,7 +243,7 @@ class APIGenericRouter(APIRouter):
                 status.HTTP_401_UNAUTHORIZED: {"model": HTTPExceptionResponse},
                 status.HTTP_403_FORBIDDEN: {"model": HTTPExceptionResponse},
                 status.HTTP_404_NOT_FOUND: {"model": HTTPExceptionResponse},
-                status.HTTP_422_UNPROCESSABLE_ENTITY: {"model": HTTPExceptionResponse},
+                status.HTTP_422_UNPROCESSABLE_CONTENT: {"model": HTTPExceptionResponse},
                 status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": HTTPExceptionResponse},
             },
         )
@@ -298,7 +298,7 @@ class APIGenericRouter(APIRouter):
                 status.HTTP_401_UNAUTHORIZED: {"model": HTTPExceptionResponse},
                 status.HTTP_403_FORBIDDEN: {"model": HTTPExceptionResponse},
                 status.HTTP_404_NOT_FOUND: {"model": HTTPExceptionResponse},
-                status.HTTP_422_UNPROCESSABLE_ENTITY: {"model": HTTPExceptionResponse},
+                status.HTTP_422_UNPROCESSABLE_CONTENT: {"model": HTTPExceptionResponse},
                 status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": HTTPExceptionResponse},
             },
         )
@@ -346,7 +346,7 @@ class APIGenericRouter(APIRouter):
                 status.HTTP_401_UNAUTHORIZED: {"model": HTTPExceptionResponse},
                 status.HTTP_403_FORBIDDEN: {"model": HTTPExceptionResponse},
                 status.HTTP_404_NOT_FOUND: {"model": HTTPExceptionResponse},
-                status.HTTP_422_UNPROCESSABLE_ENTITY: {"model": HTTPExceptionResponse},
+                status.HTTP_422_UNPROCESSABLE_CONTENT: {"model": HTTPExceptionResponse},
                 status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": HTTPExceptionResponse},
             },
         )
@@ -418,7 +418,7 @@ class APIGenericRouter(APIRouter):
                 status.HTTP_401_UNAUTHORIZED: {"model": HTTPExceptionResponse},
                 status.HTTP_403_FORBIDDEN: {"model": HTTPExceptionResponse},
                 status.HTTP_404_NOT_FOUND: {"model": HTTPExceptionResponse},
-                status.HTTP_422_UNPROCESSABLE_ENTITY: {"model": HTTPExceptionResponse},
+                status.HTTP_422_UNPROCESSABLE_CONTENT: {"model": HTTPExceptionResponse},
                 status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": HTTPExceptionResponse},
             },
         )
@@ -476,7 +476,7 @@ class APIGenericRouter(APIRouter):
                 status.HTTP_401_UNAUTHORIZED: {"model": HTTPExceptionResponse},
                 status.HTTP_403_FORBIDDEN: {"model": HTTPExceptionResponse},
                 status.HTTP_404_NOT_FOUND: {"model": HTTPExceptionResponse},
-                status.HTTP_422_UNPROCESSABLE_ENTITY: {"model": HTTPExceptionResponse},
+                status.HTTP_422_UNPROCESSABLE_CONTENT: {"model": HTTPExceptionResponse},
                 status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": HTTPExceptionResponse},
             },
         )
@@ -521,7 +521,7 @@ class APIGenericRouter(APIRouter):
                 status.HTTP_401_UNAUTHORIZED: {"model": HTTPExceptionResponse},
                 status.HTTP_403_FORBIDDEN: {"model": HTTPExceptionResponse},
                 status.HTTP_404_NOT_FOUND: {"model": HTTPExceptionResponse},
-                status.HTTP_422_UNPROCESSABLE_ENTITY: {"model": HTTPExceptionResponse},
+                status.HTTP_422_UNPROCESSABLE_CONTENT: {"model": HTTPExceptionResponse},
                 status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": HTTPExceptionResponse},
             },
         )
@@ -599,7 +599,7 @@ class APIGenericRouter(APIRouter):
                 status.HTTP_401_UNAUTHORIZED: {"model": HTTPExceptionResponse},
                 status.HTTP_403_FORBIDDEN: {"model": HTTPExceptionResponse},
                 status.HTTP_404_NOT_FOUND: {"model": HTTPExceptionResponse},
-                status.HTTP_422_UNPROCESSABLE_ENTITY: {"model": HTTPExceptionResponse},
+                status.HTTP_422_UNPROCESSABLE_CONTENT: {"model": HTTPExceptionResponse},
                 status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": HTTPExceptionResponse},
             },
         )

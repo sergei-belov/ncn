@@ -145,7 +145,7 @@ class Application(FastAPI):
         status_code = (
             status.HTTP_400_BAD_REQUEST
             if malformed_query
-            else status.HTTP_422_UNPROCESSABLE_ENTITY
+            else status.HTTP_422_UNPROCESSABLE_CONTENT
         )
         fields: dict[str, list[dict[str, str]]] = defaultdict(list)
         for error in exc.errors():
