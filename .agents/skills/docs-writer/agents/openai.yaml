@@ -1,4 +1,4 @@
 interface:
   display_name: "Docs Writer"
-  short_description: "Write evidence-backed, well-structured project docs"
-  default_prompt: "Use $docs-writer to document the project's proven current state in a clear ownership-based structure and validate facts, navigation, and links."
+  short_description: "Document and validate implementation contracts"
+  default_prompt: "Use $docs-writer to document the current implementation with a complete coverage checklist and validate structure, UI/UX, frontend and backend contracts, and evidence-scoped state claims."

@@ -1,6 +1,16 @@
 # Documentation Task Map
 
-For every task, read the applicable project instructions, target document, nearest comparable document, and `validation.md`.
+For every task, read the applicable project instructions, target document, nearest comparable document, `checklist.md`, and `validation.md`.
+
+## Full Feature or Implementation Documentation
+
+- Complete the initial-task, claim-ledger, and cross-boundary contract matrices; classify every row before finishing.
+- Trace behavior from user scenario and UI entry point through frontend state/adapters, backend registration/contracts, persistence, runtime selection, and operational effects.
+- Document design and UI/UX at the level needed by the audience; keep shared behavior canonical.
+- Reconcile accepted decisions and delivery phases with current behavior. Mark unavailable evidence or out-of-scope layers explicitly instead of silently omitting them.
+- Publish or link a compact current/declaration/target summary when accepted decisions or delivery phases exist.
+- When frontend/backend interaction is in scope, publish or link a compatibility matrix with separately classified rows for activation; client base; resource path; frontend proxy/gateway prefix; backend application prefix; path-parameter schema/requiredness/meaning; method; authentication; headers; content type; request; response/status; errors; versioning/concurrency; and a compatibility verdict. Use unknown/unestablished rather than mismatch when semantics are not evidenced.
+- When browser or backend persistence is in scope, publish or link a persistence-boundary matrix covering store and owner; workspace/user scoping; retention and cleanup; privacy/security; migrations/provisioning; transactions/idempotency; and separate rows for jobs, events, notifications, and other material side effects. Classify each side effect by mock behavior, declaration, backend wiring, execution, operational state, and evidence gap; use an explicit gap or justified not-applicable result rather than omission.
 
 ## Documentation Set or Restructure
 
@@ -18,7 +28,7 @@ For every task, read the applicable project instructions, target document, neare
 
 ## UI Page or Screen
 
-- Read `page-template.md`, the route/navigation source, shared shell or layout sources, and canonical API or state docs when available.
+- Read `page-template.md`, the route/navigation source, shared shell or layout sources, design/UX sources, and canonical API or state docs when available.
 - Update page indexes or navigation inventories when adding, removing, or renaming a page.
 - Verify routes, shells, visible page structure, responsive variants, states, permissions, actions, links, and API references.
 - Keep shared navigation and shell behavior in a canonical shared document when several pages use it; link to that document from each page.
@@ -32,7 +42,7 @@ For every task, read the applicable project instructions, target document, neare
 ## API, Architecture, or Concept
 
 - Read the owning specification or contract and only the implementation needed to verify behavior.
-- Compare each side before claiming client/server, event, storage, or runtime integration.
+- Compare frontend and backend contracts plus activation and registration before claiming client/server, event, storage, or runtime integration.
 - Follow the established local structure; do not force the page or table templates.
 - Update cross-references when a public contract, component boundary, or workflow changes.
 

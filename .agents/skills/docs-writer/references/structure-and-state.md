@@ -6,6 +6,12 @@ Use this guide for a current-state audit, a new documentation set, or any change
 
 Use the narrowest accurate state language.
 
+For every material capability, keep a claim ledger before drafting:
+
+| Subject or layer | State | Evidence | Activation | Unknowns |
+| --- | --- | --- | --- | --- |
+| [frontend, backend contract, composed runtime, environment, test, deployment] | [requested, declared, implemented, configured, activated, verified, deployed, gap] | [exact source] | [default, selected, reachable, exercised] | [unverified fact] |
+
 | State | Required evidence | Safe wording |
 | --- | --- | --- |
 | Requested or decided | User requirement or accepted decision | “will”, “must”, “is intended to” |
@@ -21,10 +27,12 @@ Use the narrowest accurate state language.
 - Do not describe uncommitted code as released or deployed.
 - Do not infer a cross-boundary state from one side. Compare client and server contracts, ORM declarations and migrations/runtime schema, producers and consumers, or configured middleware and emitted behavior.
 - Trace activation before promoting a source-visible difference to an active gap: mode selection, defaults, call sites, feature flags, route registration, proxy or origin topology, and conditional request options. State unverified preconditions explicitly.
+- Distinguish a path that is defined, selectable, selected in a known environment, reachable, exercised, and verified. If no recorded environment selects it, describe it as dormant in known configurations.
 - Treat transport claims with special care. For example, a CORS allow-list matters only for a cross-origin browser path, and a conditional header matters only where a caller supplies it.
 - Scope negative claims to the inspected evidence. Prefer “no checked-in migration defines this table” over “the database has no table.”
 - Trace wiring as well as definitions before claiming a route, handler, component, or service is implemented.
-- Use tests as supporting evidence. A test name or fixture alone does not prove the tested path passed; run it before saying it passed.
+- Keep test source, execution, and result separate. A test file does not prove a pass, and missing execution evidence does not prove that no test exists.
+- Audit `no`, `not`, `only`, `never`, `missing`, `unavailable`, and `unimplemented` claims. Name the exact layer and evidence boundary for each, especially for jobs, events, notifications, persistence, and other side effects that may exist in mock, declared, backend-wired, executed, or deployed states independently.
 - Add an evidence scope or verification date to a broad audit only when it helps readers understand freshness. A date does not replace evidence.
 
 ## Design the Documentation Map

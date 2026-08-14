@@ -20,6 +20,14 @@ Report unresolved conflicts or missing material facts instead of guessing. A use
 
 For a cross-boundary claim, trace the selected path as well as both endpoint definitions: mode selection, configuration defaults, call sites, guards, transport topology, registration, and response handling. A static difference is evidence of a contract difference; it becomes an active integration or runtime failure only when the connecting path and its preconditions are established.
 
+Build request URLs from separately evidenced parts. Distinguish the configured client base URL, resource path, proxy or gateway prefix, backend application prefix, and path-parameter meaning. Do not present their concatenation as unconditional when only a default or one side is known.
+
+Use `match` or `incompatible` only for proven semantics. Different placeholder or field names with no mapping evidence mean compatibility is not established; document missing parameter type, requiredness, or meaning as contract gaps.
+
+Keep evidence scoped to the layer it proves. A feature may be intended by a decision, declared by one contract, implemented by one adapter, absent from the composed runtime, dormant in known environments, and unverified end to end at the same time.
+
+Apply the same rule to operational nouns. A browser mock may simulate or immediately complete a job, an API may declare a job identifier, and backend worker wiring or observed execution may still be absent. Name the layer and state instead of saying broadly that no job, event, notification, cache, or side effect exists.
+
 ## Writing Principles
 
 - Write for the document's audience and purpose.
@@ -30,6 +38,7 @@ For a cross-boundary claim, trace the selected path as well as both endpoint def
 - Keep paragraphs short and remove sections that add no information.
 - Keep current behavior, interface-specific behavior, known gaps, and future work visibly distinct.
 - Describe verification scope precisely: source inspection, a specific command, an end-to-end scenario, or deployed runtime evidence.
+- Say “no check was run or recorded” when execution evidence is absent. Say no test exists only after an explicit, scoped test-source inventory supports that claim.
 
 ## Contracts and Examples
 
