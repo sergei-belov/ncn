@@ -9,7 +9,7 @@ services:
       - ./dynamic_config.yaml:/etc/kafkaui/dynamic_config.yaml:ro
     labels:
       - traefik.enable=true
-      - traefik.http.services.ncn-kafka-ui.loadbalancer.server.port=8080
-      - traefik.http.routers.ncn-kafka-ui.service=ncn-kafka-ui
-      - traefik.http.routers.ncn-kafka-ui.rule=Host(`${APP_HOST:-localhost}`) && PathPrefix(`/kafka-ui`)
-      - traefik.http.routers.ncn-kafka-ui.middlewares=auth@file
+      - traefik.http.services.${ENV_NAME:-}-kafka-ui.loadbalancer.server.port=8080
+      - traefik.http.routers.${ENV_NAME:-}-kafka-ui.service=${ENV_NAME:-}-kafka-ui
+      - traefik.http.routers.${ENV_NAME:-}-kafka-ui.rule=Host(`${APP_HOST:-localhost}`) && PathPrefix(`/kafka-ui`)
+      - traefik.http.routers.${ENV_NAME:-}-kafka-ui.middlewares=auth@file

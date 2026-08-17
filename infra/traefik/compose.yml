@@ -13,6 +13,6 @@ services:
       - prometheus.io/port=8082
       - prometheus.io/path=/metrics
       - traefik.enable=true
-      - traefik.http.routers.ncn-traefik.service=api@internal
-      - traefik.http.routers.ncn-traefik.rule=Host(`${APP_HOST:-localhost}`) && PathPrefix(`/traefik`)
-      - traefik.http.routers.ncn-traefik.middlewares=auth@file
+      - traefik.http.routers.${ENV_NAME:-}-traefik.service=api@internal
+      - traefik.http.routers.${ENV_NAME:-}-traefik.rule=Host(`${APP_HOST:-localhost}`) && PathPrefix(`/traefik`)
+      - traefik.http.routers.${ENV_NAME:-}-traefik.middlewares=auth@file

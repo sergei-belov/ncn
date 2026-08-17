@@ -9,7 +9,7 @@ services:
       - /data/redisinsight/data:/data
     labels:
       - traefik.enable=true
-      - traefik.http.services.ncn-redisinsight.loadbalancer.server.port=5540
-      - traefik.http.routers.ncn-redisinsight.service=ncn-redisinsight
-      - traefik.http.routers.ncn-redisinsight.rule=Host(`${APP_HOST:-localhost}`) && PathPrefix(`/redisinsight`)
-      - traefik.http.routers.ncn-redisinsight.middlewares=auth@file
+      - traefik.http.services.${ENV_NAME:-}-redisinsight.loadbalancer.server.port=5540
+      - traefik.http.routers.${ENV_NAME:-}-redisinsight.service=${ENV_NAME:-}-redisinsight
+      - traefik.http.routers.${ENV_NAME:-}-redisinsight.rule=Host(`${APP_HOST:-localhost}`) && PathPrefix(`/redisinsight`)
+      - traefik.http.routers.${ENV_NAME:-}-redisinsight.middlewares=auth@file

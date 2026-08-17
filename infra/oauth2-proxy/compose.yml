@@ -5,18 +5,26 @@ services:
     entrypoint: [oauth2-proxy]
     depends_on: { keycloak: { condition: service_healthy } }
     command: [--config=/oauth2-proxy.cfg]
+    environment:
+      OAUTH2_PROXY_CLIENT_SECRET: ${OAUTH2_PROXY_CLIENT_SECRET:?OAUTH2_PROXY_CLIENT_SECRET is required}
+      OAUTH2_PROXY_COOKIE_SECRET: ${OAUTH2_PROXY_COOKIE_SECRET:?OAUTH2_PROXY_COOKIE_SECRET is required}
+      OAUTH2_PROXY_REDIRECT_URL: https://${APP_HOST:-localhost}/oauth2/callback
+      OAUTH2_PROXY_OIDC_ISSUER_URL: https://${APP_HOST:-localhost}/keycloak/realms/ncn
+      OAUTH2_PROXY_WHITELIST_DOMAINS: ${APP_HOST:-localhost}
+      OAUTH2_PROXY_PROXY_PREFIX: /oauth2
+      OAUTH2_PROXY_BACKEND_LOGOUT_URL: https://${APP_HOST:-localhost}/keycloak/realms/ncn/protocol/openid-connect/logout?id_token_hint={id_token}&post_logout_redirect_uri=https://${APP_HOST:-localhost}
     volumes:
       - ./oauth2-proxy.cfg:/oauth2-proxy.cfg:ro
     labels:
       - traefik.enable=true
-      - traefik.http.services.ncn-oauth2-proxy.loadbalancer.server.port=4180
-      - traefik.http.routers.ncn-oauth2-proxy.service=ncn-oauth2-proxy
-      - traefik.http.routers.ncn-oauth2-proxy.rule=Host(`${APP_HOST:-localhost}`) && PathPrefix(`/oauth2`)
-      - traefik.http.routers.ncn-oauth2-proxy.entrypoints=http
-      - traefik.http.middlewares.oauth2-signin.errors.service=ncn-oauth2-proxy
-      - traefik.http.middlewares.oauth2-signin.errors.status=401
-      - traefik.http.middlewares.oauth2-signin.errors.query=/oauth2/sign_in?rd={url}
-      - traefik.http.middlewares.oauth2-verify.forwardAuth.address=http://${APP_HOST:-localhost}/oauth2/auth
-      - traefik.http.middlewares.oauth2-verify.forwardAuth.trustForwardHeader=true
-      - traefik.http.middlewares.oauth2-verify.forwardAuth.tls.insecureSkipVerify=true
-      - traefik.http.middlewares.oauth2-verify.forwardAuth.authResponseHeaders=X-Auth-Request-Email,X-Auth-Request-Preferred-,X-Auth-Request-Access-Token,X-Auth-Request-Roles,X-Auth-Request-User,X-Forwarded-Groups,Authorization,X-Auth-Request-Groups
+      - traefik.http.services.${ENV_NAME:-}-oauth2-proxy.loadbalancer.server.port=4180
+      - traefik.http.routers.${ENV_NAME:-}-oauth2-proxy.service=${ENV_NAME:-}-oauth2-proxy
+      - traefik.http.routers.${ENV_NAME:-}-oauth2-proxy.rule=Host(`${APP_HOST:-localhost}`) && PathPrefix(`/oauth2`)
+      - traefik.http.routers.${ENV_NAME:-}-oauth2-proxy.entrypoints=http
+      - traefik.http.middlewares.${ENV_NAME:-}-oauth2-signin.errors.service=${ENV_NAME:-}-oauth2-proxy
+      - traefik.http.middlewares.${ENV_NAME:-}-oauth2-signin.errors.status=401
+      - traefik.http.middlewares.${ENV_NAME:-}-oauth2-signin.errors.query=/oauth2/sign_in?rd={url}
+      - traefik.http.middlewares.${ENV_NAME:-}-oauth2-verify.forwardAuth.address=https://${APP_HOST:-localhost}/oauth2/auth
+      - traefik.http.middlewares.${ENV_NAME:-}-oauth2-verify.forwardAuth.trustForwardHeader=true
+      - traefik.http.middlewares.${ENV_NAME:-}-oauth2-verify.forwardAuth.tls.insecureSkipVerify=true
+      - traefik.http.middlewares.${ENV_NAME:-}-oauth2-verify.forwardAuth.authResponseHeaders=X-Auth-Request-Email,X-Auth-Request-Preferred-,X-Auth-Request-Access-Token,X-Auth-Request-Roles,X-Auth-Request-User,X-Forwarded-Groups,Authorization,X-Auth-Request-Groups

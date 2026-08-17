@@ -11,8 +11,8 @@ services:
       - prometheus.io/port=9000
       - prometheus.io/path=/minio/v2/metrics/cluster
       - traefik.enable=true
-      - traefik.http.services.ncn-minio-gui.loadbalancer.server.port=9001
-      - traefik.http.routers.ncn-minio-gui.service=ncn-minio-gui
-      - traefik.http.routers.ncn-minio-gui.rule=Host(`${APP_HOST:-localhost}`) && PathPrefix(`/minio/`)
-      - traefik.http.middlewares.ncn-minio-gui-stripprefix.stripprefix.prefixes=/minio
-      - traefik.http.routers.ncn-minio-gui.middlewares=ncn-minio-gui-stripprefix
+      - traefik.http.services.${ENV_NAME:-}-minio-gui.loadbalancer.server.port=9001
+      - traefik.http.routers.${ENV_NAME:-}-minio-gui.service=${ENV_NAME:-}-minio-gui
+      - traefik.http.routers.${ENV_NAME:-}-minio-gui.rule=Host(`${APP_HOST:-localhost}`) && PathPrefix(`/minio/`)
+      - traefik.http.middlewares.${ENV_NAME:-}-minio-gui-stripprefix.stripprefix.prefixes=/minio
+      - traefik.http.routers.${ENV_NAME:-}-minio-gui.middlewares=${ENV_NAME:-}-minio-gui-stripprefix
