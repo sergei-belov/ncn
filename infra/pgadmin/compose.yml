@@ -1,0 +1,13 @@
+services:
+  pgadmin:
+    restart: unless-stopped
+    image: dpage/pgadmin4:9.15
+    depends_on: { volume-init: { condition: service_completed_successfully } }
+    env_file: [.env]
+    volumes:
+      - /data/pgadmin/data:/var/lib/pgadmin
+    labels:
+      - traefik.enable=true
+      - traefik.http.services.ncn-pgadmin.loadbalancer.server.port=80
+      - traefik.http.routers.ncn-pgadmin.service=ncn-pgadmin
+      - traefik.http.routers.ncn-pgadmin.rule=Host(`${APP_HOST:-localhost}`) && PathPrefix(`/pgadmin`)

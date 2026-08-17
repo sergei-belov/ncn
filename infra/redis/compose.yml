@@ -1,0 +1,13 @@
+services:
+  redis:
+    restart: unless-stopped
+    image: valkey/valkey:8.1
+    healthcheck:
+      test: valkey-cli ping || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: ["/etc/redis/redis.conf"]
+    volumes:
+      - /data/redis/data:/data
+      - ./redis.conf:/etc/redis/redis.conf

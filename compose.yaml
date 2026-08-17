@@ -1,0 +1,38 @@
+name: ncn
+
+networks:
+  default:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.16.0.0/24
+          gateway: 172.16.0.1
+
+services:
+  volume-init:
+    image: willfarrell/autoheal:latest
+    network_mode: none
+    entrypoint: sh
+    command: -c 'sleep 3 && chmod 777 /volumes/* && ls -la /volumes && sleep 3'
+    volumes:
+      - ${DATA_BASE_DIR}/kafka/data:/volumes/kafka
+      - ${MONITORING_DATA_BASE_DIR}/redisinsight/data:/volumes/redisinsight
+      - ${MONITORING_DATA_BASE_DIR}/pgadmin/data:/volumes/pgadmin
+      - ${MONITORING_DATA_BASE_DIR}/grafana/data:/volumes/grafana
+
+include:
+- infra/clickhouse/compose.yml
+- infra/kafka/compose.yml
+- infra/kafka-connect/compose.yml
+- infra/kafka-ui/compose.yml
+- infra/keycloak/compose.yml
+- infra/loki/compose.yml
+- infra/minio/compose.yml
+- infra/oauth2-proxy/compose.yml
+- infra/pgadmin/compose.yml
+- infra/postgres/compose.yml
+- infra/redis/compose.yml
+- infra/redisinsight/compose.yml
+- infra/schema-registry/compose.yml
+- infra/traefik/compose.yml

@@ -1,0 +1,15 @@
+services:
+  redisinsight:
+    restart: unless-stopped
+    image: redis/redisinsight:3.4
+    depends_on: { volume-init: { condition: service_completed_successfully } }
+    environment:
+      RI_PROXY_PATH: /redisinsight/
+    volumes:
+      - /data/redisinsight/data:/data
+    labels:
+      - traefik.enable=true
+      - traefik.http.services.ncn-redisinsight.loadbalancer.server.port=5540
+      - traefik.http.routers.ncn-redisinsight.service=ncn-redisinsight
+      - traefik.http.routers.ncn-redisinsight.rule=Host(`${APP_HOST:-localhost}`) && PathPrefix(`/redisinsight`)
+      - traefik.http.routers.ncn-redisinsight.middlewares=auth@file

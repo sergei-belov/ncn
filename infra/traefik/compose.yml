@@ -1,0 +1,18 @@
+services:
+  traefik:
+    image: traefik:3.7
+    restart: unless-stopped
+    ports: [80:80, 443:443]
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik.yml:/etc/traefik/traefik.yml
+      - ./dynamic:/etc/traefik/dynamic
+      - /data/traefik/data:/data
+    labels:
+      - prometheus.io/scrape=true
+      - prometheus.io/port=8082
+      - prometheus.io/path=/metrics
+      - traefik.enable=true
+      - traefik.http.routers.ncn-traefik.service=api@internal
+      - traefik.http.routers.ncn-traefik.rule=Host(`${APP_HOST:-localhost}`) && PathPrefix(`/traefik`)
+      - traefik.http.routers.ncn-traefik.middlewares=auth@file

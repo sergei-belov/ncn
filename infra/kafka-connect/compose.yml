@@ -1,0 +1,12 @@
+services:
+  kafka-connect:
+    image: cphysics/kafka-connect:3.5.3
+    restart: unless-stopped
+    env_file: [kafka-connect.env]
+    depends_on: { kafka: { condition: service_healthy } }
+    healthcheck:
+      test: curl -f http://localhost:8083/connectors
+      start_period: 600s
+      interval: 5s
+      timeout: 10s
+      retries: 10

@@ -1,0 +1,15 @@
+auth:
+  type: DISABLED
+kafka:
+  clusters:
+  - bootstrapServers: "{{ kafka.bootstrap_servers }}"
+    kafkaConnect:
+    - address: "{{ kafka.connect_url }}"
+      name: Kafka connectors
+    name: Kafka
+    properties: {}
+    readOnly: false
+    schemaRegistry: "{{ kafka.schema_registry_url }}"
+rbac:
+  roles: []
+webclient: {}

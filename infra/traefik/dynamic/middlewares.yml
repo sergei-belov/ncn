@@ -1,0 +1,7 @@
+http:
+  middlewares:
+    # htpasswd -nb user FGkpXLY1cV6y1BPH
+    auth:
+      basicAuth:
+        users:
+          - "user:$apr1$ugeiLAzY$iIk2/V/z2l0TSWVO4KgK40"

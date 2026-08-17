@@ -1,0 +1,15 @@
+services:
+  kafka-ui:
+    restart: unless-stopped
+    image: kafbat/kafka-ui:v1.5.0
+    environment:
+      DYNAMIC_CONFIG_ENABLED: true
+      SERVER_SERVLET_CONTEXT_PATH: /kafka-ui
+    volumes:
+      - ./dynamic_config.yaml:/etc/kafkaui/dynamic_config.yaml:ro
+    labels:
+      - traefik.enable=true
+      - traefik.http.services.ncn-kafka-ui.loadbalancer.server.port=8080
+      - traefik.http.routers.ncn-kafka-ui.service=ncn-kafka-ui
+      - traefik.http.routers.ncn-kafka-ui.rule=Host(`${APP_HOST:-localhost}`) && PathPrefix(`/kafka-ui`)
+      - traefik.http.routers.ncn-kafka-ui.middlewares=auth@file

@@ -1,0 +1,25 @@
+global:
+  checkNewVersion: false
+  sendAnonymousUsage: false
+api:
+  basePath: /traefik
+  dashboard: true
+  insecure: false
+metrics:
+  prometheus:
+    entryPoint: metrics
+entryPoints:
+  http:
+    address: :80
+    transport:
+      respondingTimeouts:
+        readTimeout: 3600
+  traefik:
+    address: :8080
+  metrics:
+    address: :8082
+providers:
+  docker:
+    exposedByDefault: false
+  file:
+    directory: /etc/traefik/dynamic

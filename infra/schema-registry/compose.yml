@@ -1,0 +1,12 @@
+services:
+  schema-registry:
+    image: bitnamilegacy/schema-registry:7.9.0
+    restart: unless-stopped
+    depends_on: { kafka: { condition: service_healthy } }
+    env_file: [schema-registry.env]
+    healthcheck:
+      test: nc -z localhost 8081 || exit -1
+      start_period: 120s
+      interval: 5s
+      timeout: 10s
+      retries: 10

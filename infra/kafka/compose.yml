@@ -1,0 +1,23 @@
+services:
+  kafka:
+    image: apache/kafka:4.1.2
+    restart: unless-stopped
+    env_file: kafka.env
+    depends_on: { volume-init: { condition: service_completed_successfully } }
+    volumes:
+      - /data/kafka/data:/var/lib/kafka/data
+    healthcheck:
+      test: /opt/kafka/bin/kafka-cluster.sh cluster-id --bootstrap-server kafka:9092
+      start_period: 600s
+      interval: 5s
+      timeout: 10s
+      retries: 10
+  kafka-exporter:
+    image: danielqsj/kafka-exporter:v1.9.0
+    command: [--kafka.server=kafka:9092]
+    restart: unless-stopped
+    depends_on: { kafka: { condition: service_healthy } }
+    labels:
+      - prometheus.io/scrape=true
+      - prometheus.io/port=9308
+      - prometheus.io/path=/metrics
