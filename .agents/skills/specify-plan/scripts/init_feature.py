@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Initialize a feat-* planning package from the bundled template."""
+"""Initialize a compact feat-* planning package from the bundled template."""
 
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ TEMPLATE_DIR = SCRIPT_DIR.parent / "assets" / "feature-template"
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Create a non-overwriting feat-{name} feature planning package."
+        description="Create a non-overwriting compact feat-{name} planning package."
     )
     parser.add_argument("feature_name", help="Feature name or lowercase kebab-case slug")
     parser.add_argument(
@@ -64,7 +64,8 @@ def main() -> int:
         return 1
 
     print(f"Created feature planning package: {destination}")
-    print("Replace every <!-- TEMPLATE: ... --> marker, then run validate_feature.py.")
+    print("Replace every template marker with concise feature-specific content.")
+    print("Add docs-shaped detail only when needed, then run validate_feature.py.")
     return 0
 
 

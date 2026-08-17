@@ -1,37 +1,41 @@
 ---
 name: specify-plan
-description: Create or revise a docs-first, implementation-ready feature planning package in a validated `feat-{name}` folder. Use when Codex needs to turn a feature request, product change, enhancement, epic, or rough brief into a coherent feature contract covering requirements, user scenarios, technical design, API and other interfaces, UI/UX, data and state, decisions, delivery slices, validation, rollout, and persistent agent navigation before implementation.
+description: Create or revise a concise, docs-linked implementation plan in a validated `feat-{name}` folder. Use when Codex needs to turn a feature request, product change, enhancement, epic, or rough brief into concrete target behavior, repository-native architecture patterns with focused code examples, affected documentation contracts, and a dependency-ordered Markdown implementation checklist before coding.
 ---
 
 # Specify Plan
 
-## Core Contract
+## Contract
 
-Turn one feature request into an authoritative planning package at `<plan-root>/feat-{feature-slug}/`. Default `<plan-root>` to the repository root unless the user or repository conventions name another location. Normalize `{feature-slug}` to lowercase kebab-case.
+Create one planning package at `<plan-root>/feat-{feature-slug}/`. Default `<plan-root>` to the repository root and normalize the slug to lowercase ASCII kebab-case.
 
-Operate in specification mode:
+Write planning artifacts only. Do not implement source code, install dependencies, create migrations, or change runtime configuration. If implementation is also requested, finish and validate the package before handing work to the applicable development workflow.
 
-- Write only planning and documentation artifacts inside the feature folder.
-- Do not implement source code, install dependencies, create migrations, or change runtime configuration.
-- Ground the plan in the user's request, applicable instructions, existing specifications, and verified repository behavior.
-- Mark consequential statements as **Confirmed**, **Assumed**, or **Open**.
-- Preserve existing user-authored content and surface conflicts instead of silently replacing it.
-- Keep required documents even when an area is not applicable; state `Not applicable`, the reason, and the consequence for delivery.
+Keep the package compact and shaped like the repository documentation:
 
-If implementation is also requested, complete and validate the feature package first, then hand implementation to the applicable development workflow.
+```text
+feat-{feature-slug}/
+├── README.md          # feature contract and navigation
+├── architecture.md    # repository-specific design and code patterns
+└── implementation.md  # dependency-ordered checkbox plan
+```
 
-## Load the Resources
+Create additional Markdown only when a substantial affected contract does not fit clearly in those files. Mirror the canonical documentation path without its `docs/` prefix; for example, extend `docs/backend/services/authz/api.md` at `backend/services/authz/api.md`. Do not create empty files or directories for symmetry.
+
+## Required Resources
 
 Before writing:
 
-1. Read [references/feature-plan-system.md](references/feature-plan-system.md) completely for document ownership, required coverage, traceability, and consistency rules.
-2. Initialize a new package from [assets/feature-template](assets/feature-template) with:
+1. Read [references/plan-format.md](references/plan-format.md) completely.
+2. For a new package, run:
 
 ```bash
 python3 <skill-directory>/scripts/init_feature.py "<ASCII feature name or slug>" --path <plan-root>
 ```
 
-3. Adapt every generated template to the feature instead of copying placeholders literally. If the target folder already exists, reconcile it manually; the initializer deliberately refuses to overwrite it.
+3. If the package exists, reconcile it without overwriting user-authored content.
+
+When revising a legacy multi-document package, consolidate unique behavior into `README.md`, implementation design into `architecture.md` or justified docs-shaped detail, and incomplete work into `implementation.md`. Preserve completed work state and remove obsolete files only after their unique content and inbound links have a canonical replacement.
 
 After writing, run:
 
@@ -39,85 +43,87 @@ After writing, run:
 python3 <skill-directory>/scripts/validate_feature.py <plan-root>/feat-{feature-slug}
 ```
 
-Read [scripts/validate_feature.py](scripts/validate_feature.py) only when its validation behavior must change.
+Read the validator source only when its validation behavior must change.
 
 ## Workflow
 
-### 1. Discover the working context
+### 1. Ground the plan
 
-1. Resolve the repository root, the plan root, and all applicable `AGENTS.md` files.
-2. Read the complete request and explicitly supplied artifacts.
-3. Inspect existing project specifications, contracts, affected implementation surfaces, tests, and established UI patterns only as needed to ground the plan.
-4. Distinguish current behavior from proposed behavior and verified paths from planned paths.
-5. Select a concise ASCII feature slug and create or reconcile exactly one `feat-{feature-slug}` folder. Use `scripts/init_feature.py` for a new package.
+1. Read applicable `AGENTS.md` files and inspect the working-tree status and relevant diffs.
+2. Discover the documentation root and read its root map, architecture page, affected area indexes, and nearest comparable leaf documents.
+3. Inspect only the implementation, tests, schemas, and configuration needed to verify current behavior and repository-native patterns.
+4. Treat the user's request as target behavior, not proof of current behavior. Record unresolved conflicts or missing evidence as concise open questions.
+5. Choose the feature slug and initialize or reconcile exactly one package.
 
-### 2. Establish the navigation spine
+### 2. Choose the document map
 
-Create and populate these files first:
+Use the three baseline files for most features. Add a docs-shaped detail file only when at least one condition holds:
 
-- `README.md`: entry point, reading routes, status, and document map;
-- `feature.md`: authoritative product and behavior contract;
-- `AGENTS.md`: persistent instructions and reading order for later agents.
+- a public API or data contract needs several concrete schemas or examples;
+- a frontend page or shared interaction needs behavior that would overwhelm the overview;
+- a service or cross-service flow has several independently reviewable cases;
+- the canonical `docs/**` hierarchy already separates that concern and the plan proposes a material change to it.
 
-Then create every remaining document from the template skeleton. Make all detail documents reachable from `README.md`.
+List every plan document in `README.md`. Link existing canonical documentation directly with repository-relative Markdown links. Cite source paths for verified implementation facts. Do not copy an existing contract into the plan; describe only the relevant current constraint and intended delta.
 
-### 3. Write from observable behavior to implementation slices
+### 3. Write the feature contract
 
-Use this order:
+Use `README.md` to state:
 
-1. Define the problem, outcomes, actors, scope, requirements, invariants, permissions, and acceptance criteria in `feature.md`.
-2. Specify happy paths, alternatives, edge cases, failures, recovery, and accessibility in `scenarios.md`.
-3. Describe current context, proposed components, flows, ownership, security, failure isolation, and operations in `design/technical.md`.
-4. Specify information architecture, screens, interactions, states, content, accessibility, and responsive behavior in `design/ui-ux.md`.
-5. Define applicable API or other machine-facing contracts in `interfaces/api.md`, including authorization, schemas, validation, errors, idempotency, compatibility, and limits.
-6. Define persistent and transient state, ownership, lifecycle, consistency, retention, migration, and audit rules in `data/model.md`.
-7. Record consequential choices, alternatives, consequences, and reversal conditions in `decisions.md`.
-8. Split work into dependency-ordered, end-to-end slices in `delivery/plan.md`; include implementation surfaces, validation, rollout, rollback, and documentation updates.
+- the user or system goal in one short paragraph;
+- verified current behavior with evidence links;
+- concrete target behavior and scope boundaries;
+- a small set of primary, permission, failure, and recovery scenarios;
+- testable requirements and end-to-end acceptance criteria;
+- the plan map, canonical docs that will change, decisions, and blocking questions.
 
-### 4. Reconcile the feature contract
+Use direct heading or file links instead of synthetic cross-document identifiers such as `REQ-001`, `UX-002`, or `SLICE-003`. Do not add status vocabulary, traceability matrices, or `Not applicable` sections merely to satisfy a template.
 
-Trace each in-scope requirement through the applicable layers:
+### 4. Specify architecture concretely
 
-```text
-user outcome
-  -> REQ-NNN
-  -> SCN-NNN
-  -> UX behavior and/or API operation
-  -> technical owner
-  -> data effect
-  -> failure and recovery behavior
-  -> acceptance criterion
-  -> SLICE-NNN
-```
+Use `architecture.md` to explain the current constraints, proposed component boundaries, dependency direction, control/data flow, contracts, persistence, security, failure handling, observability, and rollout that materially affect implementation.
 
-Use links and stable IDs rather than duplicating full contracts. Ensure names, actors, states, permissions, identifiers, payloads, paths, and lifecycle rules have the same meaning everywhere.
+For every non-trivial new or changed boundary, include a focused repository-native example showing the intended shape. Prefer types, function signatures, DTOs, routes, component composition, queries, or configuration fragments over broad pseudocode. Each example must:
 
-### 5. Validate and finish
+- name the destination path or module;
+- reuse neighboring repository conventions;
+- show the architectural pattern and important types or calls;
+- omit routine boilerplate and avoid pretending the code already exists.
 
-1. Run `scripts/validate_feature.py` against the feature folder.
-2. Fix structural errors, unresolved template markers, broken or escaping links, missing README routes, orphan documents, and missing stable IDs.
-3. Search for accidental terminology or technology copied from unrelated examples.
-4. Manually review assumptions, open questions, accessibility, security, failure recovery, observability, compatibility, rollout, and acceptance coverage.
-5. Re-run validation until it passes.
+Keep detailed UI, API, or table contracts in an optional docs-shaped file only when they need independent review. Link that file from the architecture and overview.
+
+### 5. Write the implementation checklist
+
+Use `implementation.md` as an executable checklist, not a prose delivery document. Write dependency-ordered `- [ ]` tasks grouped into small coherent phases. Preserve existing `[x]` state when revising a plan.
+
+Each task must name:
+
+- the concrete outcome;
+- expected files, modules, or documentation paths;
+- the key architecture or contract constraint;
+- the validation that proves completion.
+
+Place blocking discovery or decisions before dependent code tasks. Prefer end-to-end increments over isolated “backend”, “frontend”, or “test everything” phases. Finish with integration, failure-path, security/accessibility when applicable, and canonical `docs/**` update tasks.
+
+### 6. Validate and compact
+
+1. Run the feature validator and fix errors.
+2. Treat size and legacy-ID warnings as issues to fix unless the user explicitly needs the extra material.
+3. Check every user requirement against the feature contract and at least one checklist item.
+4. Verify links, paths, symbols, commands, types, examples, and current-state claims against evidence.
+5. Remove duplicated facts, empty sections, speculative symbols, generic advice, and checklist items without a completion test.
+6. Inspect the final diff and re-read every changed file.
 
 ## Quality Bar
 
-- Keep each section as compact as the contract allows; add rows or scenarios only for distinct behavior, risk, or traceability.
-- Make requirements testable and implementation surfaces concrete without inventing unverified code symbols.
-- Prefer vertical delivery slices that produce observable value and leave the system coherent.
-- Include primary, alternate, empty, boundary, concurrent, stale, partial-failure, permission, and recovery scenarios when applicable.
-- Define loading, empty, success, validation, error, disabled, and degraded UI states when a UI applies.
-- Define stable error behavior and compatibility rules when an API or machine interface applies.
-- Never present an assumption as verified fact or mark a path `present` without inspecting it.
-- Never leave `<!-- TEMPLATE: ... -->` markers in a generated feature package.
+- Prefer direct links and exact paths over cross-reference codes.
+- Keep one canonical explanation for each fact.
+- Match the detail and tone of neighboring `docs/**`; add precision through implementation patterns and examples, not repeated prose.
+- Target at most 150 lines for `README.md`, 250 for `architecture.md`, 150 for `implementation.md`, and 800 total unless the feature genuinely requires split detail.
+- Distinguish requested, verified current, planned, and open states in plain language.
+- Never claim a path, symbol, test result, integration, migration, or deployment exists without the matching evidence.
+- Never leave `<!-- TEMPLATE: ... -->` markers in a completed package.
 
 ## Completion Report
 
-Report:
-
-- the feature folder and `README.md` entry point;
-- the selected slug and scope boundary;
-- major decisions and assumptions;
-- blocking and non-blocking open questions;
-- validation results;
-- the first safe delivery slice or applicable implementation workflow.
+Report the feature folder and `README.md`, scope boundary, principal architecture choice, blocking questions, checklist size, validation command/result, and the first unchecked implementation task.

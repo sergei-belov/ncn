@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Smoke-test validate_feature.py with valid and deliberately invalid packages."""
+"""Smoke-test initialization and compact feature-plan validation."""
 
 from __future__ import annotations
 
@@ -26,10 +26,21 @@ def materialize_feature(plan_root: Path) -> Path:
     if initialized.returncode != 0:
         raise RuntimeError(initialized.stderr or initialized.stdout)
 
+    docs_root = plan_root / "docs"
+    docs_root.mkdir()
+    (docs_root / "README.md").write_text("# Project docs\n", encoding="utf-8")
+
     destination = plan_root / "feat-search-filters"
     for path in destination.rglob("*.md"):
         text = path.read_text(encoding="utf-8")
         path.write_text(PLACEHOLDER_PATTERN.sub("Specified content.", text), encoding="utf-8")
+
+    readme = destination / "README.md"
+    readme.write_text(
+        readme.read_text(encoding="utf-8")
+        + "\nCurrent contract: [Project docs](../docs/README.md).\n",
+        encoding="utf-8",
+    )
     return destination
 
 
@@ -40,6 +51,16 @@ def run_validator(feature_root: Path) -> subprocess.CompletedProcess[str]:
         capture_output=True,
         text=True,
     )
+
+
+def expect_failure(feature_root: Path, expected: str) -> bool:
+    result = run_validator(feature_root)
+    if result.returncode != 0 and expected in result.stdout:
+        return True
+    print(f"Expected validation failure containing {expected!r}.")
+    print(result.stdout)
+    print(result.stderr)
+    return False
 
 
 def main() -> int:
@@ -67,7 +88,7 @@ def main() -> int:
 
         valid = run_validator(valid_root)
         if valid.returncode != 0:
-            print("Expected the materialized feature package to pass validation.")
+            print("Expected the materialized compact package to pass validation.")
             print(valid.stdout)
             print(valid.stderr)
             return 1
@@ -75,30 +96,73 @@ def main() -> int:
         readme = valid_root / "README.md"
         original_readme = readme.read_text(encoding="utf-8")
         readme.write_text(
-            original_readme.replace("design/technical.md", "design/missing.md"),
+            original_readme.replace("architecture.md", "missing.md"),
             encoding="utf-8",
         )
-        broken = run_validator(valid_root)
-        if broken.returncode == 0 or "broken link" not in broken.stdout:
-            print("Expected a broken README link to fail validation.")
-            print(broken.stdout)
-            print(broken.stderr)
+        if not expect_failure(valid_root, "broken link"):
             return 1
 
         readme.write_text(original_readme, encoding="utf-8")
-        unresolved = valid_root / "feature.md"
-        unresolved.write_text(
-            unresolved.read_text(encoding="utf-8") + "\n<!-- TEMPLATE: unresolved -->\n",
+        readme.write_text(
+            original_readme + "\n<!-- TEMPLATE: unresolved -->\n",
             encoding="utf-8",
         )
-        placeholder = run_validator(valid_root)
-        if placeholder.returncode == 0 or "unresolved" not in placeholder.stdout:
-            print("Expected an unresolved template marker to fail validation.")
-            print(placeholder.stdout)
-            print(placeholder.stderr)
+        if not expect_failure(valid_root, "unresolved"):
             return 1
 
-    print("validate_feature.py smoke tests passed.")
+        readme.write_text(original_readme, encoding="utf-8")
+        implementation = valid_root / "implementation.md"
+        original_implementation = implementation.read_text(encoding="utf-8")
+        implementation.write_text(
+            re.sub(r"^- \[[ xX]\]", "-", original_implementation, flags=re.MULTILINE),
+            encoding="utf-8",
+        )
+        if not expect_failure(valid_root, "checkbox"):
+            return 1
+
+        implementation.write_text(original_implementation, encoding="utf-8")
+        architecture = valid_root / "architecture.md"
+        original_architecture = architecture.read_text(encoding="utf-8")
+        architecture.write_text(
+            re.sub(
+                r"^```.*?^```\s*$",
+                "",
+                original_architecture,
+                flags=re.MULTILINE | re.DOTALL,
+            ),
+            encoding="utf-8",
+        )
+        if not expect_failure(valid_root, "fenced architecture or code example"):
+            return 1
+
+        architecture.write_text(original_architecture, encoding="utf-8")
+        readme.write_text(
+            original_readme + "\n[Outside](../../outside.md)\n",
+            encoding="utf-8",
+        )
+        if not expect_failure(valid_root, "escapes package/repository boundaries"):
+            return 1
+
+        readme.write_text(original_readme, encoding="utf-8")
+        orphan = valid_root / "backend" / "api.md"
+        orphan.parent.mkdir()
+        orphan.write_text("# Planned API\n", encoding="utf-8")
+        if not expect_failure(valid_root, "not reachable from README.md"):
+            return 1
+
+        architecture.write_text(
+            architecture.read_text(encoding="utf-8")
+            + "\nOptional detail: [API plan](backend/api.md).\n",
+            encoding="utf-8",
+        )
+        linked = run_validator(valid_root)
+        if linked.returncode != 0:
+            print("Expected a linked optional docs-shaped file to pass validation.")
+            print(linked.stdout)
+            print(linked.stderr)
+            return 1
+
+    print("specify-plan script smoke tests passed.")
     return 0
 
 
