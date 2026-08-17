@@ -1,0 +1,1 @@
+from libs.cp_debezium.handlers.cdc_handler import DebeziumCDCHandler

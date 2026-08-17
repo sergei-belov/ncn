@@ -1,0 +1,2 @@
+from libs.cp_debezium.connector_configs.debezium_jdbc import DebeziumJdbcConnectorConfig
+from libs.cp_debezium.connector_configs.debezium_postgres import DebeziumPostgresConnectorConfig
