@@ -1,0 +1,19 @@
+services:
+  keycloak:
+    image: bitnamilegacy/keycloak:24.0.5
+    restart: unless-stopped
+    env_file: keycloak.env
+    depends_on: { postgres: { condition: service_healthy } }
+    volumes:
+      - ./realm.json:/opt/keycloak/data/import/realm.json:ro
+    healthcheck:
+      test: curl -f localhost:8080/cyberstudio/keycloak/realms/master
+      start_period: 120s
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    labels:
+      - traefik.enable=true
+      - traefik.http.services.${ENV_NAME:-cyberstudio}-keycloak.loadbalancer.server.port=8080
+      - traefik.http.routers.${ENV_NAME:-cyberstudio}-keycloak.service=${ENV_NAME:-}-keycloak
+      - traefik.http.routers.${ENV_NAME:-cyberstudio}-keycloak.rule=Host(`${APP_HOST:-localhost}`) && PathPrefix(`/keycloak`)

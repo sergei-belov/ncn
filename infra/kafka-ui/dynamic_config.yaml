@@ -2,14 +2,14 @@ auth:
   type: DISABLED
 kafka:
   clusters:
-  - bootstrapServers: "{{ kafka.bootstrap_servers }}"
+  - bootstrapServers: "kafka:9092"
     kafkaConnect:
-    - address: "{{ kafka.connect_url }}"
+    - address: "http://kafka-connect:8083"
       name: Kafka connectors
     name: Kafka
     properties: {}
     readOnly: false
-    schemaRegistry: "{{ kafka.schema_registry_url }}"
+    schemaRegistry: "http://schema-registry:8081"
 rbac:
   roles: []
 webclient: {}

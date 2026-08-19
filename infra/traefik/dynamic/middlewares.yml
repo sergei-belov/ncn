@@ -1,6 +1,6 @@
 http:
   middlewares:
-    # htpasswd -nb user FGkpXLY1cV6y1BPH
+    # htpasswd -nb user BNx7bx1suxxH
     auth:
       basicAuth:
         users:

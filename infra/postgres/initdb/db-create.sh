@@ -2,6 +2,9 @@
 POSTGRES_DBS="
 ncn
 stage-ncn
+keycloak
+temporal
+temporal_visibility
 "
 
 set -e
